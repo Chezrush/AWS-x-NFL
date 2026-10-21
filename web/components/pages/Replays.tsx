@@ -11,13 +11,83 @@ import type { Replay as R } from "@/lib/data";
 
 const FIELD_W = 53.3;
 
+type Meta = Omit<R, "frames" | "players" | "los_x" | "first_down_x" | "pass_frame_index" | "hz"> & { result: string };
+type GameFile = Record<string, Pick<R, "los_x" | "first_down_x" | "pass_frame_index" | "hz" | "players" | "frames">>;
+
 export default function Replays({ replays, compact = false }: { replays: R[]; compact?: boolean }) {
   const t = useTranslations("Studio");
+  if (!compact) return <AllReplays />;
   if (!replays.length) return <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">{t("noReplays")}</p>;
   return <ReplayView replays={replays} compact={compact} />;
 }
 
-function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
+/** Tous les matchs : index leger (/replays/index.json) puis un fichier de frames par match, charge a la demande. */
+function AllReplays() {
+  const t = useTranslations("Replay");
+  const [index, setIndex] = useState<Meta[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [week, setWeek] = useState<string>("");
+  const [gameId, setGameId] = useState<string>("");
+  const [plays, setPlays] = useState<R[] | null>(null);
+  const files = useRef(new Map<number, GameFile>());
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/replays/index.json").then((r) => (r.ok ? (r.json() as Promise<Meta[]>) : Promise.reject(new Error(String(r.status)))))
+      .then((d) => { if (!alive) return; setIndex(d); setWeek(String(d[0]?.week ?? "")); setGameId(String(d[0]?.gameId ?? "")); })
+      .catch(() => alive && setFailed(true));
+    return () => { alive = false; };
+  }, []);
+
+  const weeks = useMemo(() => [...new Set((index ?? []).map((m) => m.week))].sort((a, b) => a - b), [index]);
+  const games = useMemo(() => {
+    const m = new Map<number, Meta>();
+    for (const x of index ?? []) if (String(x.week) === week && !m.has(x.gameId)) m.set(x.gameId, x);
+    return [...m.values()];
+  }, [index, week]);
+
+  useEffect(() => {
+    if (!index || !gameId) return;
+    let alive = true;
+    const id = Number(gameId);
+    setPlays(null);
+    const cached = files.current.get(id);
+    (cached ? Promise.resolve(cached) : fetch(`/replays/${id}.json`).then((r) => (r.ok ? (r.json() as Promise<GameFile>) : Promise.reject(new Error(String(r.status))))))
+      .then((f) => {
+        files.current.set(id, f);
+        if (alive) setPlays(index.filter((m) => m.gameId === id && f[m.playId]).map((m) => ({ ...m, ...f[m.playId] })));
+      })
+      .catch(() => alive && setFailed(true));
+    return () => { alive = false; };
+  }, [index, gameId]);
+
+  if (failed) return <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">{t("loadError")}</p>;
+  if (!index || !plays) return <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground" role="status">{t("loading")}</p>;
+
+  const pickWeek = (w: string) => { setWeek(w); setGameId(String(index.find((m) => String(m.week) === w)?.gameId ?? "")); };
+  const toolbar = (
+    <div className="grid gap-4 rounded-xl border bg-card p-5 sm:grid-cols-2 lg:max-w-2xl">
+      <div className="flex flex-col gap-2">
+        <label htmlFor="replay-week" className="text-sm font-semibold">{t("week")}</label>
+        <Select value={week} onValueChange={pickWeek}>
+          <SelectTrigger id="replay-week" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{weeks.map((w) => <SelectItem key={w} value={String(w)}>{t("weekN", { n: w })}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="replay-game" className="text-sm font-semibold">{t("game")}</label>
+        <Select value={gameId} onValueChange={setGameId}>
+          <SelectTrigger id="replay-game" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{games.map((g) => <SelectItem key={g.gameId} value={String(g.gameId)}>{g.offense} / {g.defense}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+  if (!plays.length) return <div className="flex flex-col gap-4">{toolbar}<p className="text-sm text-muted-foreground">{t("noPlays")}</p></div>;
+  return <ReplayView key={gameId} replays={plays} compact={false} toolbar={toolbar} />;
+}
+
+function ReplayView({ replays, compact, toolbar }: { replays: R[]; compact: boolean; toolbar?: React.ReactNode }) {
   const t = useTranslations("Replay");
   const c = useTranslations("Coverage");
   const studio = useTranslations("Studio");
@@ -99,6 +169,7 @@ function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
         <h1>{t("title")}</h1>
         <p className="max-w-3xl text-muted-foreground">{t("intro")}</p>
       </header>}
+      {toolbar}
 
       {compact && <div className="mb-5 flex items-center justify-between gap-3"><h2 className="text-base font-bold">{studio("replayTitle")}</h2><span className="rounded-md bg-secondary px-2 py-1 text-xs font-semibold text-secondary-foreground">{studio("tracking")}</span></div>}
       <div className={compact ? "mb-5 flex flex-wrap items-end gap-3" : "flex flex-col gap-3 rounded-xl border bg-card p-5 sm:flex-row sm:items-end sm:justify-between"}>
@@ -174,7 +245,7 @@ function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
               </li>
             ))}
           </ul>
-          {compact && <p className="mt-4 border-t pt-4 text-sm leading-relaxed"><strong className="font-semibold">{r.target.name}</strong> · <span className="font-semibold text-primary">{sg.format(r.soe)} yd SOE</span><span className="mt-1 block text-xs text-muted-foreground">{t("honesty")}</span></p>}
+          {compact && <p className="mt-4 border-t pt-4 text-sm leading-relaxed"><strong className="font-semibold">{r.target.name}</strong> · <span className="font-semibold text-primary">{r.soe == null ? "–" : sg.format(r.soe)} yd SOE</span><span className="mt-1 block text-xs text-muted-foreground">{t("honesty")}</span></p>}
         </div>
 
         {!compact && <aside className="flex min-w-0 flex-col gap-5 lg:col-span-4">
@@ -183,9 +254,9 @@ function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
               <CardDescription className="num">{t("downDist", { down: r.down, ytg: r.yardsToGo })} · Q{r.quarter}</CardDescription></CardHeader>
             <CardContent className="grid grid-cols-2 gap-x-5 gap-y-6">
               <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{nf.format(r.sep)}</div><div className="text-xs text-muted-foreground">{t("separation")}</div></div>
-              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{nf.format(r.expected_sep)}</div><div className="text-xs text-muted-foreground">{t("expected")}</div></div>
-              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight text-primary">{sg.format(r.soe)}</div><div className="text-xs text-muted-foreground">SOE</div></div>
-              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{sg2.format(r.epa)}</div><div className="text-xs text-muted-foreground">EPA</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{(r.expected_sep == null ? "–" : nf.format(r.expected_sep))}</div><div className="text-xs text-muted-foreground">{t("expected")}</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight text-primary">{(r.soe == null ? "–" : sg.format(r.soe))}</div><div className="text-xs text-muted-foreground">SOE</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{(r.epa == null ? "–" : sg2.format(r.epa))}</div><div className="text-xs text-muted-foreground">EPA</div></div>
             </CardContent>
           </Card>
           <Card size="sm">
@@ -200,7 +271,7 @@ function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
               <p lang="en" className="mt-2 text-sm leading-relaxed">{r.playDescription}</p>
             </CardContent>
           </Card>
-          <p className="text-xs leading-relaxed text-muted-foreground">{t("honesty")}</p>
+          <p className="text-xs leading-relaxed text-muted-foreground">{t("honestyAll")}</p>
         </aside>}
       </div>
     </div>

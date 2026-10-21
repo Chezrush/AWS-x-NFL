@@ -40,7 +40,7 @@ export type Replay = {
   gameId: number; playId: number; week: number; offense: string; defense: string;
   quarter: number; down: number; yardsToGo: number; coverage: string; coverage_type: CovType;
   target: { nflId: number; name: string; pos: string };
-  sep: number; expected_sep: number; soe: number; epa: number; playDescription: string;
+  sep: number; expected_sep: number | null; soe: number | null; epa: number | null; playDescription: string;
   los_x: number; first_down_x: number; pass_frame_index: number; hz: number;
   players: ReplayPlayer[]; frames: number[][];
 };

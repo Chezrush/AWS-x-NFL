@@ -212,6 +212,57 @@ for _, c in cand.iterrows():
                      players=plist, frames=frames))
 dump("replays.json", reps)
 
+# ---------- replays de tous les jeux : index + un fichier de frames par match (web/public/replays)
+RDIR = os.path.join(ROOT, "web", "public", "replays"); os.makedirs(RDIR, exist_ok=True)
+POST = 5   # le tracking s'arrête ~0,5 s après le lancer
+allp = r[r.is_target & r.passResult.isin(["C", "I", "IN"])].drop_duplicates(["gameId", "playId"])
+index = []
+for gid, gp in allp.groupby("gameId"):
+    g = wk.loc[gid]
+    t = pd.read_csv(os.path.join(D, "tracking", f"tracking_{gid}.csv"))
+    left = t.playDirection.eq("left")
+    t.loc[left, "x"] = 120 - t.x; t.loc[left, "y"] = 53.3 - t.y
+    pl_out = {}
+    for _, c in gp.iterrows():
+        tp = t[(t.playId == c.playId) & (t.frameId >= c.frame_snap) & (t.frameId <= c.frame_pass + POST)]
+        if tp.empty: continue
+        pf = pff[(pff.gameId == gid) & (pff.playId == c.playId)].set_index("nflId")
+        first = tp[tp.frameId == tp.frameId.min()].set_index("nflId")
+        ids = [i for i in tp.nflId.dropna().unique()]
+        plist = []
+        for i in ids:
+            off = first.team.get(i) == c.possessionTeam
+            role = "target" if i == c.nflId else "closest_defender" if i == c.def_nflId else "offense" if off else "defense"
+            plist.append(dict(nflId=int(i), name=names.displayName.get(i), pos=names.officialPosition.get(i),
+                              team=c.possessionTeam if off else c.defensiveTeam, side="offense" if off else "defense", role=role,
+                              jersey=int(first.jerseyNumber.get(i)) if pd.notna(first.jerseyNumber.get(i)) else None,
+                              lined_up=pf.pff_positionLinedUp.get(i) if i in pf.index else None))
+        X = tp[tp.nflId.notna()].pivot(index="frameId", columns="nflId", values="x").ffill().bfill()
+        Y = tp[tp.nflId.notna()].pivot(index="frameId", columns="nflId", values="y").ffill().bfill()
+        B = tp[tp.nflId.isna()].set_index("frameId")[["x", "y"]].reindex(X.index).ffill().bfill()
+        cols = [float(i) for i in ids]
+        arr = np.zeros((len(X), 2 * len(ids) + 2))
+        arr[:, 0:2 * len(ids):2] = X[cols].values; arr[:, 1:2 * len(ids):2] = Y[cols].values
+        arr[:, -2:] = B.values
+        los = float(B.x.iloc[0])
+        meta = dict(gameId=int(gid), playId=int(c.playId), week=int(g.week), offense=c.possessionTeam, defense=c.defensiveTeam,
+                    quarter=int(c.quarter), down=int(c.down), yardsToGo=int(c.yardsToGo), coverage=c.pff_passCoverage,
+                    coverage_type=c.ctype if c.ctype in ("man", "zone") else "other",
+                    target=dict(nflId=int(c.nflId), name=c.displayName, pos=c.pos),
+                    sep=round(float(c.sep), 2), expected_sep=round(float(c.exp), 2) if pd.notna(c.exp) else None,
+                    soe=round(float(c.soe), 2) if pd.notna(c.soe) else None, epa=round(float(c.epa), 2) if pd.notna(c.epa) else None,
+                    result=c.passResult, playDescription=c.playDescription)
+        index.append(meta)
+        pl_out[int(c.playId)] = dict(los_x=round(los, 2), first_down_x=round(los + int(c.yardsToGo), 2),
+                                     pass_frame_index=int(c.frame_pass - c.frame_snap), hz=10, players=plist,
+                                     frames=np.round(arr, 1).tolist())
+    with open(os.path.join(RDIR, f"{int(gid)}.json"), "w", encoding="utf-8") as f:
+        json.dump(pl_out, f, ensure_ascii=False, separators=(",", ":"))
+index.sort(key=lambda m: (m["week"], m["gameId"], m["playId"]))
+with open(os.path.join(RDIR, "index.json"), "w", encoding="utf-8") as f:
+    json.dump(index, f, ensure_ascii=False, separators=(",", ":"))
+print("replays: ", len(index), "jeux,", len(set(m["gameId"] for m in index)), "matchs")
+
 # ---------- validation
 for p in reps: print("REPLAY", p["gameId"], "|", p["playDescription"], "| CIBLE:", p["target"]["name"], "| sep", p["sep"], "soe", p["soe"])
 print("jeux", nplays, "routes", len(r))

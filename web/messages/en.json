@@ -1,0 +1,433 @@
+{
+  "Meta": {
+    "title": "Who to Attack",
+    "description": "NFL coach companion: find the receivers a defense cannot keep covered (Separation Over Expected).",
+    "tagline": "NFL passing-game scout",
+    "season": "2021 season · weeks 1–8"
+  },
+  "Nav": {
+    "group": "Scout",
+    "overview": "Overview",
+    "gameplan": "Game plan",
+    "players": "Players",
+    "defenses": "Defenses",
+    "replays": "Replays",
+    "method": "Method"
+  },
+  "Shell": {
+    "toggleMenu": "Toggle menu",
+    "search": "Search players, pages…",
+    "searchHint": "Search for a player or a page",
+    "searchPlaceholder": "Type a player name…",
+    "noResults": "No result.",
+    "pages": "Pages",
+    "players": "Players",
+    "language": "Language",
+    "theme": "Toggle theme"
+  },
+  "Metrics": {
+    "soe": {
+      "name": "SOE",
+      "help": "Separation Over Expected: yards between the receiver and the nearest defender at the throw, minus the typical value for that position, alignment and coverage. Positive = more open than expected."
+    },
+    "epa": {
+      "name": "EPA",
+      "help": "Expected Points Added: points the play added for the offense. Higher is better for the offense."
+    },
+    "toe": {
+      "name": "TOE",
+      "help": "Targets Over Expected: actual targets minus the targets expected from the space the player created. Negative = thrown to less than the space suggests."
+    },
+    "rank": {
+      "name": "Rank",
+      "help": "Rank by space conceded: 1 = concedes the least space, 32 = concedes the most."
+    },
+    "soe_allowed": {
+      "name": "Space conceded",
+      "help": "Average SOE of receivers against this defense, compared with the league average. Positive = concedes more space than average."
+    },
+    "epa_allowed": {
+      "name": "EPA allowed",
+      "help": "Expected points per pass allowed, compared with the league average. Positive = worse for the defense."
+    },
+    "routes": {
+      "name": "Routes",
+      "help": "Pass routes run by the player in the analyzed plays."
+    },
+    "targets": {
+      "name": "Targets",
+      "help": "Times the quarterback threw to the player."
+    },
+    "receptions": {
+      "name": "Receptions",
+      "help": "Completed catches."
+    },
+    "rec_yards": {
+      "name": "Receiving yards",
+      "help": "Total yards gained on receptions."
+    },
+    "tds": {
+      "name": "Touchdowns",
+      "help": "Receiving touchdowns."
+    },
+    "catch_rate": {
+      "name": "Catch rate",
+      "help": "Receptions divided by targets."
+    },
+    "target_rate": {
+      "name": "Target rate",
+      "help": "Targets divided by routes run."
+    },
+    "air_yards": {
+      "name": "Air yards",
+      "help": "Average distance the ball traveled in the air, per target."
+    },
+    "yac": {
+      "name": "YAC",
+      "help": "Average yards after the catch."
+    },
+    "cpoe": {
+      "name": "CPOE",
+      "help": "Completion Percentage Over Expected: how much more (or less) often passes to him are completed than a typical pass would be."
+    }
+  },
+  "Overview": {
+    "kicker": "2021 · Weeks {from}–{to}",
+    "title": "Who to attack",
+    "soeText": "Separation Over Expected is the space a receiver had from the nearest defender at the throw, compared with what is typical for that position and coverage. Use it to pick matchups.",
+    "kpiPlays": "passing plays analyzed",
+    "kpiRoutes": "routes measured",
+    "kpiPlayers": "players ranked",
+    "kpiTargeted": "targeted passes",
+    "moversTitle": "Top movers",
+    "moversDesc": "Players who created the most space above expectation, by coverage type.",
+    "quick": {
+      "gameplan": "Pick a matchup and get the receivers to target.",
+      "players": "Search and compare every receiver.",
+      "defenses": "Scout how each defense plays.",
+      "replays": "Watch the space on real plays."
+    }
+  },
+  "Proof": {
+    "claim": "Against man coverage, throwing to an open receiver is worth about {delta} more points per pass than throwing to a covered one.",
+    "claimSub": "Same pattern for completions: a receiver who gets more open than expected catches the ball more often.",
+    "metric": "Metric",
+    "metricCompletion": "Completion rate",
+    "metricEpa": "Expected points (EPA)",
+    "toggle": "Coverage",
+    "all": "All coverages",
+    "low": "Below expected",
+    "mid": "As expected",
+    "high": "Above expected",
+    "n": "{n} targeted routes",
+    "completion": "completion rate",
+    "epaLabel": "avg. EPA per targeted pass",
+    "epaExplain": "expected points added by the play: the higher, the better for the offense.",
+    "caution": "Correlation, not causation. Based on {n} targeted passes from weeks {from}–{to} of 2021; better-covered throws are also harder throws."
+  },
+  "Coverage": {
+    "man": "Man",
+    "zone": "Zone",
+    "zoneOther": "Zone & other",
+    "manExplain": "Man: each defender follows one receiver.",
+    "zoneExplain": "Zone: each defender guards an area of the field (here, \"Zone\" also includes other coverages)."
+  },
+  "Rank": {
+    "rowRoutes": "{n} routes"
+  },
+  "Watch": {
+    "title": "Open but rarely targeted",
+    "intro": "Receivers who regularly get space, yet are thrown to less often than their situations would suggest.",
+    "how": "Expected targets = how often a route with this much space, this position and this coverage type is typically targeted; we compare it with the real count.",
+    "cautionTitle": "A lead, not an instruction",
+    "caution": "These players' targets do not earn more points than others ({a} EPA per target vs {b}), and the quarterback may have good reasons not to throw to them. Examine the film before acting.",
+    "targets": "{actual} targets vs {expected} expected",
+    "routes": "{n} routes",
+    "min": "Players with at least {n} routes."
+  },
+  "Pos": {
+    "WR": "Wide receiver",
+    "TE": "Tight end",
+    "RB": "Running back"
+  },
+  "Tier": {
+    "elite": "Elite",
+    "good": "Good",
+    "avg": "Average",
+    "low": "Below avg.",
+    "insufficient": "Insufficient"
+  },
+  "Align": {
+    "wide": "Outside",
+    "slot": "Slot",
+    "back": "Backfield",
+    "te_flex": "TE (flex)",
+    "te_inline": "TE (inline)"
+  },
+  "Plan": {
+    "myTeam": "My team (offense)",
+    "opp": "Opposing defense",
+    "down": "Down",
+    "distance": "Distance",
+    "anyDown": "All situations",
+    "down1": "1st down",
+    "down2": "2nd down",
+    "down3": "3rd down",
+    "down4": "4th down",
+    "short": "Short (3 yds or less)",
+    "medium": "Medium (4–7 yds)",
+    "long": "Long (8 yds or more)",
+    "tendency": "How the defense plays",
+    "plays": "{n} plays",
+    "mostCommon": "Most common coverage: {cov}",
+    "league": "League: {pct}% man",
+    "alertTitle": "Falling back to the whole season",
+    "alertFallback": "Too few plays in this exact situation, so this uses all of {defense}'s season instead.",
+    "lowSampleTitle": "Small sample",
+    "alertLow": "Only {n} plays: treat this read with caution.",
+    "target": "Who to target",
+    "targetSub": "Top receivers against {type, select, man {man} other {zone}} coverage, by SOE",
+    "routes": "{n} routes",
+    "yds": "yds",
+    "lowN": "Small sample",
+    "summary": "Against {defense} {situation}, ~{pct}% {type, select, man {man} other {zone}} coverage: target {player} ({soe} yds of extra space).",
+    "summaryAll": "Against {defense} in all situations, ~{pct}% {type, select, man {man} other {zone}} coverage: target {player} ({soe} yds of extra space).",
+    "situationName": "on {down, select, 1 {1st} 2 {2nd} 3 {3rd} 4 {4th} other {any down}} & {dist, select, short {short} medium {medium} long {long} other {any distance}}",
+    "noData": "No data for this matchup.",
+    "glanceTitle": "{defense} defense at a glance",
+    "glanceDesc": "Compared with the league average, not with zero.",
+    "glanceRank": "Space rank",
+    "glanceRankHelp": "1 = concedes the least space",
+    "glanceSoe": "Space conceded",
+    "glanceEpa": "EPA allowed",
+    "glanceVsLeague": "vs league average",
+    "glanceLink": "Open the full {defense} report"
+  },
+  "Players": {
+    "title": "Players",
+    "intro": "{n} receivers, tight ends and backs with 10+ routes. Click a row for the full profile.",
+    "missingTitle": "Player data not available",
+    "missingDesc": "player_profiles.json was not found in the data folder.",
+    "search": "Search",
+    "searchPlaceholder": "Player name",
+    "position": "Position",
+    "team": "Team",
+    "tier": "Tier",
+    "minRoutes": "Minimum routes",
+    "all": "All",
+    "col": {
+      "player": "Player",
+      "tier": "Tier",
+      "man": "SOE vs Man",
+      "zone": "SOE vs Zone",
+      "routes": "Routes",
+      "targets": "Targets",
+      "epa": "EPA/target"
+    },
+    "insufficient": "Insufficient sample (n={n})",
+    "lowN": "Small sample",
+    "emptyTitle": "No player matches",
+    "emptyDesc": "Loosen a filter to see more players.",
+    "count": "{n} of {total} players",
+    "epaNote": "* EPA with fewer than 15 targets is unreliable",
+    "page": "Page {p} of {n}",
+    "prev": "Previous page",
+    "next": "Next page",
+    "soeNote": "SOE by coverage is shown only from 30 routes against that coverage."
+  },
+  "Player": {
+    "loading": "Loading profile…",
+    "notFound": "Player not found",
+    "subtitle": "Player profile",
+    "age": "age {n}",
+    "yds": "yds",
+    "n": "n={n}",
+    "percentile": "percentile {p}",
+    "rank": "rank {r}/{n} {pos}",
+    "insufficientN": "Insufficient sample (n={n})",
+    "insufficientShort": "insufficient",
+    "na": "n/a",
+    "lowN": "Small sample ({n} routes)",
+    "lowNWarn": "Few routes: every number on this profile is noisy. Read it as an indication, not a verdict.",
+    "soe_all": "SOE (all)",
+    "soe_man": "SOE vs Man",
+    "soe_zone": "SOE vs Zone",
+    "tab": {
+      "summary": "Summary",
+      "coverage": "vs Man / Zone",
+      "alignment": "Alignment",
+      "trend": "Trend",
+      "plays": "Best plays"
+    },
+    "smallSample": "small sample",
+    "expectedTargets": "({n} expected targets)",
+    "percentiles": "Percentile vs {pos}s",
+    "scheme": "Coverage",
+    "routesCol": "Routes",
+    "targetsCol": "Targets",
+    "fadedNote": "Faded rows and points rest on few routes.",
+    "alignment": "Alignment",
+    "weekShort": "W",
+    "noPlays": "No highlighted plays.",
+    "playMeta": "Week {week} vs {opp} · {down} & {ytg}",
+    "sep": "Separation",
+    "viewReplay": "View replay",
+    "bestNote": "The three plays with the most space above expectation."
+  },
+  "Defenses": {
+    "title": "Defense scouting",
+    "intro": "How each defense plays, where it concedes space and who has beaten it. Values are compared with the league average.",
+    "missingTitle": "Team data not available",
+    "missingDesc": "teams.json was not found in the data folder.",
+    "allTitle": "All 32 defenses",
+    "rankNote": "Ranked by space conceded: 1 = concedes the least. Click a row for the report.",
+    "rank": "Rank",
+    "team": "Defense",
+    "soeVsLeague": "Space vs league",
+    "plays": "Plays faced",
+    "report": "{team} defense report",
+    "close": "Close report",
+    "rankLabel": "Space-conceded rank",
+    "rankHelp": "1 = concedes the least",
+    "epaVsLeague": "EPA allowed vs league",
+    "epaHelp": "positive = worse for the defense",
+    "leagueMan": "League: {pct}% man",
+    "mixTitle": "Coverage mix",
+    "mixDesc": "Share of pass plays, vs league (top coverages).",
+    "league": "League",
+    "ddTitle": "Tendencies by down & distance",
+    "ddDesc": "Share of man coverage and most common scheme.",
+    "short": "Short",
+    "medium": "Medium",
+    "long": "Long",
+    "downN": "Down {n}",
+    "fadedNote": "Faded cells have fewer than 8 plays.",
+    "vulnTitle": "Vulnerable positions",
+    "vulnDesc": "Space conceded by position, vs league.",
+    "rawVal": "{v} (league {l})",
+    "worstTitle": "Worst matchups conceded",
+    "worstDesc": "Receivers who gained the most space against this defense (min. {n} routes).",
+    "routesN": "{n} routes",
+    "formTitle": "By offensive formation",
+    "formation": "Formation"
+  },
+  "Replay": {
+    "title": "Replays",
+    "intro": "Real player tracking at 10 frames per second. The receiver is circled in gold, the nearest defender in red.",
+    "choose": "Choose a play",
+    "weekN": "Week {n}",
+    "downDist": "{down} & {ytg}",
+    "field": "Top-down view of the play",
+    "yardsShort": "{v} yds",
+    "play": "Play",
+    "pause": "Pause",
+    "time": "Time",
+    "restart": "Replay",
+    "afterThrow": "Throw released",
+    "beforeThrow": "Before the throw",
+    "legendTarget": "Targeted receiver",
+    "legendClosest": "Nearest defender",
+    "legendOffense": "Offense",
+    "legendDefense": "Defense",
+    "legendBall": "Ball",
+    "separation": "Separation (yds)",
+    "expected": "Expected",
+    "coverage": "Coverage",
+    "target": "Target",
+    "description": "Play description (original)",
+    "honesty": "These are the best cases selected from the season, to illustrate the idea; they are not typical plays."
+  },
+  "Method": {
+    "title": "Method & limits",
+    "defsTitle": "Definitions",
+    "def": {
+      "soe": {
+        "name": "SOE: Separation Over Expected",
+        "text": "Yards between the receiver and the nearest coverage defender at the throw, minus the median for the same position, alignment group and coverage type. Player averages are shrunk toward zero when samples are small."
+      },
+      "epa": {
+        "name": "EPA: Expected Points Added",
+        "text": "How many points the play added for the offense, from nflverse play-by-play. Higher is better for the offense."
+      },
+      "toe": {
+        "name": "TOE: Targets Over Expected",
+        "text": "Actual targets minus expected targets, where expected = how often a route with that much space, position and coverage type is typically targeted."
+      },
+      "cover": {
+        "name": "Man vs Zone",
+        "text": "Man: each defender follows one receiver. Zone: each defender guards an area of the field. In this app, \"Zone\" also includes other coverages (prevent, red zone…), so Zone share = 100% minus Man."
+      }
+    },
+    "limitsTitle": "Limits",
+    "b1": "Data: 2021 season, weeks 1–8 only, {plays} passing plays. Penalties, sacks, scrambles and plays without a throw are excluded.",
+    "b2": "Small samples, especially against man coverage: individual numbers are shrunk toward zero and labeled when the sample is small.",
+    "b3": "SOE measures space at the moment of the throw, not route quality, speed or the quarterback's accuracy.",
+    "b4": "Targeted receivers and expected points (EPA) come from nflverse public play-by-play, joined exactly to the tracking plays: {n} targeted passes.",
+    "b6": "\"Zone\" includes the other coverages (e.g. prevent, red zone), so Zone share = 100% minus Man. Team SOE averages are raw (not centered), so teams are always compared with the league average.",
+    "b5": "Replays are the best cases, selected to illustrate. Completion rates and EPA show correlations, not proven causes.",
+    "foot": "Data: NFL Big Data Bowl tracking · nflverse · Built for the AWS x NFL hackathon"
+  },
+  "Radar": {
+    "kicker": "Optimal Target & Mismatch Radar",
+    "title": "NFL Optimal Target & Mismatch Radar",
+    "pitch": "For the offensive coordinator: on passing downs, which receiver was the best option and did the QB find him? Metric:",
+    "otsName": "OTS (Optimal Target Score)",
+    "otsDef": "OTS (0-99) combines current separation and projected separation at +0.5 s, x1.25 for a mismatch (RB/TE on a linebacker, or a speed edge above 1.5 yd/s) and x1.20 if the receiver gets past the first-down line.",
+    "loading": "Loading data...",
+    "loadError": "Could not load the data files (public/data/leaderboard.json, featured_plays.json).",
+    "noPlays": "No featured plays available.",
+    "kpiGain": "Mismatch separation gain",
+    "kpiGainHelp": "Extra projected yards of separation for RB/TE covered by a linebacker vs other cases.",
+    "kpiIgnore": "QB skips the optimal target",
+    "kpiIgnoreHelp": "Share of plays where the QB did not target the highest-OTS receiver.",
+    "kpiVolume": "Plays / routes analyzed",
+    "kpiVolumeHelp": "{n} routes in a mismatch.",
+    "kpiOts": "Avg OTS: mismatch vs others",
+    "kpiOtsHelp": "Average Optimal Target Score on mismatch routes vs all other routes.",
+    "honesty": "Honesty note: with about 5 eligible receivers, a QB would miss the top-OTS one around 80% of the time by pure chance, so compare the skip rate to that baseline. OTS is a model, not an absolute truth; the QB also sees coverage, pressure and timing. Small samples: always check n.",
+    "lbTitle": "Under-Exploited & Mismatch Leaderboard",
+    "lbDesc": "Receivers who are often the best option but get targeted less than expected.",
+    "all": "All",
+    "mismatchOnly": "Mismatch vs LB only",
+    "minRoutes": "Minimum 30 routes to limit noise.",
+    "minMismatch": "At least 5 mismatch routes and 10 routes; sorted by mismatch win rate by default.",
+    "colPlayer": "Player",
+    "colPos": "Pos",
+    "colOts": "Avg OTS",
+    "colBestVsActual": "% best target / % targeted",
+    "colDelta": "Missed opps (pts)",
+    "colMmWin": "Mismatch win %",
+    "colN": "n routes",
+    "bestVsActualTitle": "Best target {best}% of the time, actually targeted {actual}%",
+    "empty": "No player matches these filters.",
+    "fieldTitle": "Interactive Play Radar & 2D Field Replay",
+    "fieldDesc": "Pick a featured play and scrub through it. Dotted line: receiver to his nearest defender.",
+    "choosePlay": "Featured plays",
+    "week": "Wk {n}",
+    "downDist": "{down, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} & {ytg}",
+    "qbGap": "{n, plural, =0 {QB found the best} other {QB gap: # OTS}}",
+    "fieldAria": "Field replay, {down} and {ytg}, {cov}",
+    "play": "Play",
+    "pause": "Pause",
+    "goThrow": "Go to throw (pass_forward)",
+    "time": "Replay time",
+    "afterThrow": "after throw",
+    "beforeThrow": "before throw",
+    "legendBest": "Best target",
+    "legendTarget": "QB's target",
+    "legendOffense": "Offense",
+    "legendDefense": "Defense",
+    "legendLos": "Line of scrimmage",
+    "legendFirst": "First-down line",
+    "insightTitle": "Coach Insight",
+    "insightNone": "No eligible target identified on this play.",
+    "insightFound": "{down, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} & {ytg} ({cov}): the QB found the best target, his {bestPos} (OTS {bestOts}){mm, select, yes {, a mismatch against {def} with {sep} yds of projected separation} other { with {sep} yds of projected separation}}.",
+    "insightMiss": "{down, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} & {ytg} ({cov}): the QB targets his {tgtPos} (OTS {tgtOts}) while his {bestPos} is {mm, select, yes {in a mismatch against {def} with {sep} yds of projected separation (OTS {bestOts})} other {more open, with {sep} yds of projected separation (OTS {bestOts})}}.",
+    "defGroup": {
+      "LB": "a linebacker",
+      "CB": "a cornerback",
+      "S": "a safety",
+      "other": "a defender"
+    }
+  }
+}

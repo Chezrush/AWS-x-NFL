@@ -1,0 +1,433 @@
+{
+  "Meta": {
+    "title": "Qui attaquer",
+    "description": "Le compagnon du coach NFL : trouvez les receveurs qu'une défense ne couvre pas (Separation Over Expected).",
+    "tagline": "Scouting du jeu de passe NFL",
+    "season": "Saison 2021 · semaines 1–8"
+  },
+  "Nav": {
+    "group": "Scouting",
+    "overview": "Vue d'ensemble",
+    "gameplan": "Plan de jeu",
+    "players": "Joueurs",
+    "defenses": "Défenses",
+    "replays": "Replays",
+    "method": "Méthode"
+  },
+  "Shell": {
+    "toggleMenu": "Afficher/masquer le menu",
+    "search": "Chercher un joueur, une page…",
+    "searchHint": "Rechercher un joueur ou une page",
+    "searchPlaceholder": "Tapez un nom de joueur…",
+    "noResults": "Aucun résultat.",
+    "pages": "Pages",
+    "players": "Joueurs",
+    "language": "Langue",
+    "theme": "Changer de thème"
+  },
+  "Metrics": {
+    "soe": {
+      "name": "SOE",
+      "help": "Separation Over Expected : yards entre le receveur et le défenseur le plus proche au lancer, moins la valeur typique pour ce poste, cet alignement et cette couverture. Positif = plus libre que prévu."
+    },
+    "epa": {
+      "name": "EPA",
+      "help": "Expected Points Added : points attendus ajoutés par le jeu pour l'attaque. Plus c'est haut, mieux c'est pour l'attaque."
+    },
+    "toe": {
+      "name": "TOE",
+      "help": "Targets Over Expected : cibles réelles moins cibles attendues d'après l'espace créé. Négatif = ciblé moins que l'espace ne le suggère."
+    },
+    "rank": {
+      "name": "Rang",
+      "help": "Rang selon l'espace concédé : 1 = concède le moins d'espace, 32 = en concède le plus."
+    },
+    "soe_allowed": {
+      "name": "Espace concédé",
+      "help": "SOE moyen des receveurs contre cette défense, comparé à la moyenne de la ligue. Positif = concède plus d'espace que la moyenne."
+    },
+    "epa_allowed": {
+      "name": "EPA concédé",
+      "help": "Points attendus par passe concédés, comparés à la moyenne de la ligue. Positif = pire pour la défense."
+    },
+    "routes": {
+      "name": "Routes",
+      "help": "Routes de passe courues par le joueur dans les jeux analysés."
+    },
+    "targets": {
+      "name": "Cibles",
+      "help": "Nombre de fois où le quarterback a lancé vers lui."
+    },
+    "receptions": {
+      "name": "Réceptions",
+      "help": "Passes attrapées."
+    },
+    "rec_yards": {
+      "name": "Yards à la réception",
+      "help": "Yards gagnés sur réceptions."
+    },
+    "tds": {
+      "name": "Touchdowns",
+      "help": "Touchdowns à la réception."
+    },
+    "catch_rate": {
+      "name": "% de réussite",
+      "help": "Réceptions divisées par les cibles."
+    },
+    "target_rate": {
+      "name": "Taux de ciblage",
+      "help": "Cibles divisées par les routes courues."
+    },
+    "air_yards": {
+      "name": "Air yards",
+      "help": "Distance moyenne parcourue par le ballon en l'air, par cible."
+    },
+    "yac": {
+      "name": "YAC",
+      "help": "Yards moyens gagnés après la réception."
+    },
+    "cpoe": {
+      "name": "CPOE",
+      "help": "Completion Percentage Over Expected : à quel point les passes vers lui sont plus (ou moins) souvent complétées qu'une passe typique."
+    }
+  },
+  "Overview": {
+    "kicker": "2021 · Semaines {from}–{to}",
+    "title": "Qui attaquer",
+    "soeText": "Le Separation Over Expected est l'espace dont disposait un receveur par rapport au défenseur le plus proche au lancer, comparé à la valeur typique pour ce poste et cette couverture. Servez-vous-en pour choisir vos duels.",
+    "kpiPlays": "jeux de passe analysés",
+    "kpiRoutes": "routes mesurées",
+    "kpiPlayers": "joueurs classés",
+    "kpiTargeted": "passes ciblées",
+    "moversTitle": "Meilleurs SOE",
+    "moversDesc": "Les joueurs qui ont créé le plus d'espace au-delà des attentes, par type de couverture.",
+    "quick": {
+      "gameplan": "Choisissez un duel, obtenez les receveurs à viser.",
+      "players": "Cherchez et comparez chaque receveur.",
+      "defenses": "Scoutez le jeu de chaque défense.",
+      "replays": "Voyez l'espace sur de vrais jeux."
+    }
+  },
+  "Proof": {
+    "claim": "En couverture homme, viser un receveur libre rapporte environ {delta} point de plus par passe qu'un receveur couvert.",
+    "claimSub": "Même tendance pour les complétions : un receveur qui se démarque plus que prévu attrape plus souvent le ballon.",
+    "metric": "Mesure",
+    "metricCompletion": "Taux de complétion",
+    "metricEpa": "Points attendus (EPA)",
+    "toggle": "Couverture",
+    "all": "Toutes couvertures",
+    "low": "Sous les attentes",
+    "mid": "Comme prévu",
+    "high": "Au-dessus des attentes",
+    "n": "{n} routes ciblées",
+    "completion": "taux de complétion",
+    "epaLabel": "EPA moyen par passe ciblée",
+    "epaExplain": "points attendus ajoutés par le jeu : plus c'est haut, mieux c'est pour l'attaque.",
+    "caution": "Corrélation, pas causalité. Basé sur {n} passes ciblées des semaines {from}–{to} de 2021 ; les passes les mieux défendues sont aussi les plus difficiles."
+  },
+  "Coverage": {
+    "man": "Homme",
+    "zone": "Zone",
+    "zoneOther": "Zone et autres",
+    "manExplain": "Homme : chaque défenseur suit un receveur.",
+    "zoneExplain": "Zone : chaque défenseur garde un secteur du terrain (ici « Zone » inclut aussi les autres couvertures)."
+  },
+  "Rank": {
+    "rowRoutes": "{n} routes"
+  },
+  "Watch": {
+    "title": "Ouverts mais peu visés",
+    "intro": "Des receveurs qui se démarquent régulièrement, mais sont ciblés moins souvent que leurs situations ne le suggèrent.",
+    "how": "Cibles attendues = la fréquence à laquelle une route avec autant d'espace, ce poste et ce type de couverture est habituellement ciblée ; on la compare au nombre réel.",
+    "cautionTitle": "Une piste, pas une consigne",
+    "caution": "Les cibles de ces joueurs ne rapportent pas plus de points que les autres ({a} EPA par cible contre {b}), et le quarterback peut avoir de bonnes raisons de ne pas les viser. Vérifiez à la vidéo avant d'agir.",
+    "targets": "{actual} cibles pour {expected} attendues",
+    "routes": "{n} routes",
+    "min": "Joueurs avec au moins {n} routes."
+  },
+  "Pos": {
+    "WR": "Receveur",
+    "TE": "Tight end",
+    "RB": "Running back"
+  },
+  "Tier": {
+    "elite": "Élite",
+    "good": "Bon",
+    "avg": "Moyen",
+    "low": "Sous la moyenne",
+    "insufficient": "Insuffisant"
+  },
+  "Align": {
+    "wide": "Extérieur",
+    "slot": "Slot",
+    "back": "Backfield",
+    "te_flex": "TE (flex)",
+    "te_inline": "TE (aligné)"
+  },
+  "Plan": {
+    "myTeam": "Mon équipe (attaque)",
+    "opp": "Défense adverse",
+    "down": "Down",
+    "distance": "Distance",
+    "anyDown": "Toutes situations",
+    "down1": "1er down",
+    "down2": "2e down",
+    "down3": "3e down",
+    "down4": "4e down",
+    "short": "Courte (3 yds ou moins)",
+    "medium": "Moyenne (4–7 yds)",
+    "long": "Longue (8 yds ou plus)",
+    "tendency": "Comment la défense joue",
+    "plays": "{n} jeux",
+    "mostCommon": "Couverture la plus fréquente : {cov}",
+    "league": "Ligue : {pct} % homme",
+    "alertTitle": "Repli sur l'ensemble de la saison",
+    "alertFallback": "Trop peu de jeux dans cette situation précise : on utilise toute la saison de {defense}.",
+    "lowSampleTitle": "Petit échantillon",
+    "alertLow": "Seulement {n} jeux : lisez ce constat avec prudence.",
+    "target": "Qui viser",
+    "targetSub": "Meilleurs receveurs contre une couverture {type, select, man {homme} other {zone}}, selon le SOE",
+    "routes": "{n} routes",
+    "yds": "yds",
+    "lowN": "Petit échantillon",
+    "summary": "Contre {defense} {situation}, ~{pct} % de couverture {type, select, man {homme} other {zone}} : visez {player} ({soe} yds d'espace en plus).",
+    "summaryAll": "Contre {defense} toutes situations, ~{pct} % de couverture {type, select, man {homme} other {zone}} : visez {player} ({soe} yds d'espace en plus).",
+    "situationName": "{down, select, 1 {au 1er} 2 {au 2e} 3 {au 3e} 4 {au 4e} other {à tout down}} & {dist, select, short {court} medium {moyen} long {long} other {à toute distance}}",
+    "noData": "Aucune donnée pour ce duel.",
+    "glanceTitle": "Défense {defense} en un coup d'œil",
+    "glanceDesc": "Comparé à la moyenne de la ligue, pas à zéro.",
+    "glanceRank": "Rang d'espace",
+    "glanceRankHelp": "1 = concède le moins d'espace",
+    "glanceSoe": "Espace concédé",
+    "glanceEpa": "EPA concédé",
+    "glanceVsLeague": "vs moyenne ligue",
+    "glanceLink": "Ouvrir le rapport complet {defense}"
+  },
+  "Players": {
+    "title": "Joueurs",
+    "intro": "{n} receveurs, tight ends et running backs avec 10+ routes. Cliquez une ligne pour la fiche complète.",
+    "missingTitle": "Données joueurs indisponibles",
+    "missingDesc": "player_profiles.json est introuvable dans le dossier de données.",
+    "search": "Recherche",
+    "searchPlaceholder": "Nom du joueur",
+    "position": "Poste",
+    "team": "Équipe",
+    "tier": "Niveau",
+    "minRoutes": "Routes minimum",
+    "all": "Tous",
+    "col": {
+      "player": "Joueur",
+      "tier": "Niveau",
+      "man": "SOE vs Homme",
+      "zone": "SOE vs Zone",
+      "routes": "Routes",
+      "targets": "Cibles",
+      "epa": "EPA/cible"
+    },
+    "insufficient": "Échantillon insuffisant (n={n})",
+    "lowN": "Petit échantillon",
+    "emptyTitle": "Aucun joueur ne correspond",
+    "emptyDesc": "Assouplissez un filtre pour voir plus de joueurs.",
+    "count": "{n} joueurs sur {total}",
+    "epaNote": "* l'EPA avec moins de 15 cibles est peu fiable",
+    "page": "Page {p} sur {n}",
+    "prev": "Page précédente",
+    "next": "Page suivante",
+    "soeNote": "Le SOE par couverture n'est affiché qu'à partir de 30 routes contre cette couverture."
+  },
+  "Player": {
+    "loading": "Chargement de la fiche…",
+    "notFound": "Joueur introuvable",
+    "subtitle": "Fiche joueur",
+    "age": "{n} ans",
+    "yds": "yds",
+    "n": "n={n}",
+    "percentile": "percentile {p}",
+    "rank": "rang {r}/{n} {pos}",
+    "insufficientN": "Échantillon insuffisant (n={n})",
+    "insufficientShort": "insuffisant",
+    "na": "n/d",
+    "lowN": "Petit échantillon ({n} routes)",
+    "lowNWarn": "Peu de routes : tous les chiffres de cette fiche sont bruités. Lisez-les comme une indication, pas un verdict.",
+    "soe_all": "SOE (tous)",
+    "soe_man": "SOE vs Homme",
+    "soe_zone": "SOE vs Zone",
+    "tab": {
+      "summary": "Résumé",
+      "coverage": "vs Homme / Zone",
+      "alignment": "Alignement",
+      "trend": "Tendance",
+      "plays": "Meilleurs jeux"
+    },
+    "smallSample": "petit échantillon",
+    "expectedTargets": "({n} cibles attendues)",
+    "percentiles": "Percentile vs {pos}",
+    "scheme": "Couverture",
+    "routesCol": "Routes",
+    "targetsCol": "Cibles",
+    "fadedNote": "Les lignes et points atténués reposent sur peu de routes.",
+    "alignment": "Alignement",
+    "weekShort": "S",
+    "noPlays": "Aucun jeu mis en avant.",
+    "playMeta": "Semaine {week} vs {opp} · {down} & {ytg}",
+    "sep": "Séparation",
+    "viewReplay": "Voir le replay",
+    "bestNote": "Les trois jeux avec le plus d'espace au-delà des attentes."
+  },
+  "Defenses": {
+    "title": "Scouting des défenses",
+    "intro": "Comment chaque défense joue, où elle concède de l'espace et qui l'a battue. Les valeurs sont comparées à la moyenne de la ligue.",
+    "missingTitle": "Données équipes indisponibles",
+    "missingDesc": "teams.json est introuvable dans le dossier de données.",
+    "allTitle": "Les 32 défenses",
+    "rankNote": "Classées par espace concédé : 1 = concède le moins. Cliquez une ligne pour le rapport.",
+    "rank": "Rang",
+    "team": "Défense",
+    "soeVsLeague": "Espace vs ligue",
+    "plays": "Jeux affrontés",
+    "report": "Rapport défense {team}",
+    "close": "Fermer le rapport",
+    "rankLabel": "Rang d'espace concédé",
+    "rankHelp": "1 = concède le moins",
+    "epaVsLeague": "EPA concédé vs ligue",
+    "epaHelp": "positif = pire pour la défense",
+    "leagueMan": "Ligue : {pct} % homme",
+    "mixTitle": "Mix de couvertures",
+    "mixDesc": "Part des jeux de passe, vs ligue (couvertures principales).",
+    "league": "Ligue",
+    "ddTitle": "Tendances par down et distance",
+    "ddDesc": "Part de couverture homme et schéma le plus fréquent.",
+    "short": "Courte",
+    "medium": "Moyenne",
+    "long": "Longue",
+    "downN": "Down {n}",
+    "fadedNote": "Les cases atténuées ont moins de 8 jeux.",
+    "vulnTitle": "Postes vulnérables",
+    "vulnDesc": "Espace concédé par poste, vs ligue.",
+    "rawVal": "{v} (ligue {l})",
+    "worstTitle": "Pires duels concédés",
+    "worstDesc": "Receveurs qui ont gagné le plus d'espace contre cette défense (min. {n} routes).",
+    "routesN": "{n} routes",
+    "formTitle": "Par formation offensive",
+    "formation": "Formation"
+  },
+  "Replay": {
+    "title": "Replays",
+    "intro": "Vrai tracking des joueurs à 10 images par seconde. Le receveur est cerclé d'or, le défenseur le plus proche de rouge.",
+    "choose": "Choisir un jeu",
+    "weekN": "Semaine {n}",
+    "downDist": "{down} & {ytg}",
+    "field": "Vue du dessus du jeu",
+    "yardsShort": "{v} yds",
+    "play": "Lecture",
+    "pause": "Pause",
+    "time": "Temps",
+    "restart": "Rejouer",
+    "afterThrow": "Lancer effectué",
+    "beforeThrow": "Avant le lancer",
+    "legendTarget": "Receveur ciblé",
+    "legendClosest": "Défenseur le plus proche",
+    "legendOffense": "Attaque",
+    "legendDefense": "Défense",
+    "legendBall": "Ballon",
+    "separation": "Séparation (yds)",
+    "expected": "Attendue",
+    "coverage": "Couverture",
+    "target": "Cible",
+    "description": "Description du jeu (originale)",
+    "honesty": "Ce sont les meilleurs cas de la saison, choisis pour illustrer l'idée ; ce ne sont pas des jeux typiques."
+  },
+  "Method": {
+    "title": "Méthode et limites",
+    "defsTitle": "Définitions",
+    "def": {
+      "soe": {
+        "name": "SOE : Separation Over Expected",
+        "text": "Yards entre le receveur et le défenseur de couverture le plus proche au lancer, moins la médiane pour le même poste, groupe d'alignement et type de couverture. Les moyennes par joueur sont ramenées vers zéro quand l'échantillon est petit."
+      },
+      "epa": {
+        "name": "EPA : Expected Points Added",
+        "text": "Nombre de points que le jeu a ajoutés pour l'attaque, d'après le play-by-play nflverse. Plus c'est haut, mieux c'est pour l'attaque."
+      },
+      "toe": {
+        "name": "TOE : Targets Over Expected",
+        "text": "Cibles réelles moins cibles attendues, où attendu = fréquence à laquelle une route avec autant d'espace, ce poste et ce type de couverture est habituellement ciblée."
+      },
+      "cover": {
+        "name": "Homme vs Zone",
+        "text": "Homme : chaque défenseur suit un receveur. Zone : chaque défenseur garde un secteur du terrain. Ici « Zone » inclut aussi les autres couvertures (prévention, zone rouge…) : part de zone = 100 % moins la part d'homme."
+      }
+    },
+    "limitsTitle": "Limites",
+    "b1": "Données : saison 2021, semaines 1 à 8 seulement, {plays} jeux de passe. Fautes, sacks, scrambles et jeux sans lancer sont exclus.",
+    "b2": "Petits échantillons, surtout contre la couverture homme : les valeurs individuelles sont ramenées vers zéro et signalées quand l'échantillon est faible.",
+    "b3": "Le SOE mesure l'espace au moment du lancer, pas la qualité de la route, la vitesse ou la précision du quarterback.",
+    "b4": "Receveurs ciblés et points attendus (EPA) viennent du play-by-play public nflverse, joint exactement aux jeux de tracking : {n} passes ciblées.",
+    "b6": "« Zone » inclut les autres couvertures (ex. prévention, zone rouge) : part de zone = 100 % moins la part d'homme. Les SOE moyens d'équipe sont bruts (non centrés) : on compare toujours à la moyenne de la ligue.",
+    "b5": "Les replays sont les meilleurs cas, choisis pour illustrer. Les taux de complétion et l'EPA montrent des corrélations, pas des causes prouvées.",
+    "foot": "Données : tracking NFL Big Data Bowl · nflverse · Réalisé pour le hackathon AWS x NFL"
+  },
+  "Radar": {
+    "kicker": "Radar de cible optimale et de mismatch",
+    "title": "NFL Optimal Target & Mismatch Radar",
+    "pitch": "Pour le coordinateur offensif : en situation de passe, quel receveur était la meilleure option et le QB l'a-t-il trouvé ? Métrique :",
+    "otsName": "OTS (Optimal Target Score)",
+    "otsDef": "L'OTS (0-99) combine la séparation actuelle et projetée à +0,5 s, x1,25 en cas de mismatch (RB/TE face à un linebacker, ou avantage de vitesse > 1,5 yd/s) et x1,20 si le receveur dépasse la ligne du 1er essai.",
+    "loading": "Chargement des données...",
+    "loadError": "Impossible de charger les fichiers de données (public/data/leaderboard.json, featured_plays.json).",
+    "noPlays": "Aucun jeu phare disponible.",
+    "kpiGain": "Gain de séparation en mismatch",
+    "kpiGainHelp": "Yards de séparation projetée en plus pour un RB/TE couvert par un linebacker, par rapport aux autres cas.",
+    "kpiIgnore": "Le QB ignore la cible optimale",
+    "kpiIgnoreHelp": "Part des jeux où le QB n'a pas ciblé le receveur à l'OTS le plus haut.",
+    "kpiVolume": "Jeux / routes analysés",
+    "kpiVolumeHelp": "{n} routes en mismatch.",
+    "kpiOts": "OTS moyen : mismatch vs autres",
+    "kpiOtsHelp": "OTS moyen des routes en mismatch comparé à toutes les autres routes.",
+    "honesty": "Honnêteté : avec environ 5 receveurs éligibles, un QB raterait le meilleur OTS environ 80 % du temps au hasard ; comparez le taux d'oubli à cette référence. L'OTS est un modèle, pas une vérité absolue : le QB voit aussi la couverture, la pression et le timing. Petits effectifs : vérifiez toujours n.",
+    "lbTitle": "Classement sous-exploités et mismatch",
+    "lbDesc": "Receveurs souvent la meilleure option mais moins ciblés que prévu.",
+    "all": "Tous",
+    "mismatchOnly": "Mismatch vs LB uniquement",
+    "minRoutes": "Minimum 30 routes pour limiter le bruit.",
+    "minMismatch": "Au moins 5 routes en mismatch et 10 routes ; trié par taux de réussite en mismatch par défaut.",
+    "colPlayer": "Joueur",
+    "colPos": "Poste",
+    "colOts": "OTS moyen",
+    "colBestVsActual": "% meilleure cible / % ciblé",
+    "colDelta": "Opportunités manquées (pts)",
+    "colMmWin": "Mismatch gagné %",
+    "colN": "n routes",
+    "bestVsActualTitle": "Meilleure cible {best} % du temps, réellement ciblé {actual} %",
+    "empty": "Aucun joueur ne correspond à ces filtres.",
+    "fieldTitle": "Radar de jeu interactif et replay 2D",
+    "fieldDesc": "Choisissez un jeu phare et parcourez-le. Pointillé : receveur vers son défenseur le plus proche.",
+    "choosePlay": "Jeux phares",
+    "week": "Sem. {n}",
+    "downDist": "{down}e & {ytg}",
+    "qbGap": "{n, plural, =0 {QB a trouvé la meilleure} other {Écart QB : # OTS}}",
+    "fieldAria": "Replay du terrain, {down}e et {ytg}, {cov}",
+    "play": "Lecture",
+    "pause": "Pause",
+    "goThrow": "Aller au lancer (pass_forward)",
+    "time": "Temps du replay",
+    "afterThrow": "après le lancer",
+    "beforeThrow": "avant le lancer",
+    "legendBest": "Meilleure cible",
+    "legendTarget": "Cible du QB",
+    "legendOffense": "Attaque",
+    "legendDefense": "Défense",
+    "legendLos": "Ligne de mêlée",
+    "legendFirst": "Ligne du 1er essai",
+    "insightTitle": "Coach Insight",
+    "insightNone": "Aucune cible éligible identifiée sur ce jeu.",
+    "insightFound": "{down}e & {ytg} ({cov}) : le QB a trouvé la meilleure cible, son {bestPos} (OTS {bestOts}){mm, select, yes {, en mismatch face à {def} avec {sep} yds de séparation projetée} other { avec {sep} yds de séparation projetée}}.",
+    "insightMiss": "{down}e & {ytg} ({cov}) : le QB cible son {tgtPos} (OTS {tgtOts}) alors que son {bestPos} est {mm, select, yes {en mismatch face à {def} avec {sep} yds de séparation projetée (OTS {bestOts})} other {plus ouvert, avec {sep} yds de séparation projetée (OTS {bestOts})}}.",
+    "defGroup": {
+      "LB": "un linebacker",
+      "CB": "un cornerback",
+      "S": "un safety",
+      "other": "un défenseur"
+    }
+  }
+}

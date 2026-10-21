@@ -141,3 +141,12 @@ export async function loadAll(): Promise<AllData> {
   const { top_overlooked, meta } = overlookedRaw;
   return { players, tendencies, gamePlan, replays, validation, overlooked: { meta, top_overlooked } };
 }
+
+/** Optional OTS exports; SOE remains the dashboard fallback until these are provided. */
+export async function loadRadar() {
+  const [lb, plays] = await Promise.all([
+    readOptional<import("./radar").Leaderboard>("leaderboard"),
+    readOptional<import("./radar").FeaturedPlay[]>("featured_plays"),
+  ]);
+  return lb && plays ? { lb, plays } : null;
+}

@@ -8,8 +8,8 @@ import Insight from "@/components/radar/Insight";
 import type { FeaturedPlay } from "@/lib/radar";
 
 const FIELD_W = 53.3;
-const NEON = "#39FF14";
-const ORANGE = "#FF8A00";
+const NEON = "#c5e7a2";
+const ORANGE = "#e6b07b";
 
 export default function FieldReplay({ plays }: { plays: FeaturedPlay[] }) {
   const t = useTranslations("Radar");
@@ -26,16 +26,13 @@ export default function FieldReplay({ plays }: { plays: FeaturedPlay[] }) {
   useEffect(() => {
     if (!playing) return;
     let prev = performance.now();
+    let cursor = frame;
     const tick = (now: number) => {
       const dt = (now - prev) / 1000;
       prev = now;
-      let done = false;
-      setFrame((f) => {
-        const nf = f + dt * r.hz;
-        if (nf >= last) { done = true; return last; }
-        return nf;
-      });
-      if (done) setPlaying(false); else raf.current = requestAnimationFrame(tick);
+      cursor = Math.min(last, cursor + dt * r.hz);
+      setFrame(cursor);
+      if (cursor >= last) setPlaying(false); else raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
     return () => { if (raf.current) cancelAnimationFrame(raf.current); };
@@ -71,20 +68,16 @@ export default function FieldReplay({ plays }: { plays: FeaturedPlay[] }) {
       <CardHeader>
         <CardTitle>{t("fieldTitle")}</CardTitle>
         <CardDescription>{t("fieldDesc")}</CardDescription>
-        <div className="mt-2 flex flex-wrap gap-2" role="list" aria-label={t("choosePlay")}>
-          {plays.map((p, i) => (
-            <button key={p.id} role="listitem" type="button" onClick={() => setIdx(i)} aria-pressed={i === idx}
-              className={`rounded-lg border px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-muted/60 ${i === idx ? "border-primary bg-primary/10" : "bg-card"}`}>
-              <div className="font-bold">{p.offense} vs {p.defense} · {t("week", { n: p.week })}</div>
-              <div className="num text-muted-foreground">{t("downDist", { down: p.down, ytg: p.yardsToGo })} · {p.coverage.replace(/-/g, " ")}</div>
-              <div className="num font-semibold" style={{ color: p.qb_gap > 0 ? ORANGE : NEON }}>{t("qbGap", { n: p.qb_gap })}</div>
-            </button>
-          ))}
-        </div>
+        <select aria-label={t("choosePlay")} value={idx} onChange={(event) => setIdx(Number(event.target.value))}
+          className="mt-2 h-11 w-full min-w-0 rounded-lg border bg-background px-3 text-sm font-medium">
+          {plays.map((p, i) => <option key={p.id} value={i}>
+            {p.offense} vs {p.defense} · {t("week", { n: p.week })} · {t("downDist", { down: p.down, ytg: p.yardsToGo })} · {p.coverage.replace(/-/g, " ")}
+          </option>)}
+        </select>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <svg viewBox={`${bounds.x0} ${bounds.y0} ${W} ${bounds.y1 - bounds.y0}`} role="img" aria-label={t("fieldAria", { cov: covLabel, down: r.down, ytg: r.yardsToGo })}
-          className="mx-auto max-h-[460px] w-full rounded-xl border bg-[#07140e]">
+          className="mx-auto max-h-[460px] w-full rounded-xl border bg-[#193d2e]">
           {yardLines.map((x) => (
             <g key={x}>
               <line x1={x} x2={x} y1={-5} y2={FIELD_W + 5} stroke="#fff" strokeOpacity={0.15} strokeWidth={0.15} />
@@ -115,7 +108,7 @@ export default function FieldReplay({ plays }: { plays: FeaturedPlay[] }) {
               <g key={p.nflId}>
                 {rc?.is_optimal_target && <circle cx={x} cy={y} r={1.9} fill="none" stroke={NEON} strokeWidth={0.45} />}
                 {rc?.is_targeted && <circle cx={x} cy={y} r={rc.is_optimal_target ? 2.6 : 1.9} fill="none" stroke={ORANGE} strokeWidth={0.45} />}
-                <circle cx={x} cy={y} r={0.9} fill={p.side === "offense" ? "#4ade80" : "#94a3b8"} stroke="#06120b" strokeWidth={0.15} />
+                <circle cx={x} cy={y} r={0.9} fill={p.side === "offense" ? "#9dd1b5" : "#94a3b8"} stroke="#06120b" strokeWidth={0.15} />
                 {(rc || p.role === "coverage") && <text x={x} y={y + 0.4} fontSize={1} fontWeight={800} textAnchor="middle" fill="#041008">{p.jersey}</text>}
               </g>
             );
@@ -131,14 +124,14 @@ export default function FieldReplay({ plays }: { plays: FeaturedPlay[] }) {
             <SkipForward className="size-4" />{t("goThrow")}
           </Button>
           <input type="range" min={0} max={last} step={0.1} value={fi} aria-label={t("time")}
-            onChange={(e) => { setPlaying(false); setFrame(Number(e.target.value)); }} className="min-w-32 flex-1 accent-[#39FF14]" />
+            onChange={(e) => { setPlaying(false); setFrame(Number(e.target.value)); }} className="min-w-32 flex-1 accent-primary" />
           <span className="num text-xs text-muted-foreground">{nf.format(fi / r.hz)}s · {fi >= r.pass_frame_index - 0.01 ? t("afterThrow") : t("beforeThrow")}</span>
         </div>
 
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          {([[NEON, t("legendBest"), true], [ORANGE, t("legendTarget"), true], ["#4ade80", t("legendOffense"), false], ["#94a3b8", t("legendDefense"), false], ["#60a5fa", t("legendLos"), false], ["#fde047", t("legendFirst"), false]] as const).map(([col, label, ring]) => (
+          {([[NEON, t("legendBest"), true], [ORANGE, t("legendTarget"), true], ["#9dd1b5", t("legendOffense"), false], ["#94a3b8", t("legendDefense"), false], ["#60a5fa", t("legendLos"), false], ["#fde047", t("legendFirst"), false]] as const).map(([col, label, ring]) => (
             <li key={label} className="flex items-center gap-1.5">
-              <span className="inline-block size-3 rounded-full" style={ring ? { border: `3px solid ${col}` } : { background: col }} />{label}
+              <span className="inline-block size-3 rounded-full bg-[#193d2e]" style={ring ? { border: `3px solid ${col}` } : { background: col }} />{label}
             </li>
           ))}
         </ul>

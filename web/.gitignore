@@ -1,7 +1,10 @@
 node_modules
 .next
+.next-coach/
 .env
 .env.local
 next-env.d.ts
 *.tsbuildinfo
 public/data
+
+.pnpm-store/

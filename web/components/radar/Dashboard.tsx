@@ -1,89 +1,56 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Info } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, ArrowUpRight, CalendarDays, Info, Shield, Users } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Leaderboard from "@/components/radar/Leaderboard";
 import FieldReplay from "@/components/radar/FieldReplay";
+import CoachLeaderboard from "@/components/overview/CoachLeaderboard";
+import Replays from "@/components/pages/Replays";
+import type { AllData } from "@/lib/data";
 import type { FeaturedPlay, Leaderboard as LB } from "@/lib/radar";
 
-const NEON = "#39FF14";
-
-export default function Dashboard() {
+export default function Dashboard({ fallback, initialRadar: radar }: { fallback: AllData | null; initialRadar: {lb: LB; plays: FeaturedPlay[]} | null }) {
   const t = useTranslations("Radar");
+  const s = useTranslations("Studio");
+  const m = useTranslations("Meta");
   const locale = useLocale();
-  const [lb, setLb] = useState<LB | null>(null);
-  const [plays, setPlays] = useState<FeaturedPlay[] | null>(null);
-  const [err, setErr] = useState(false);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [a, b] = await Promise.all([fetch("/data/leaderboard.json"), fetch("/data/featured_plays.json")]);
-        if (!a.ok || !b.ok) throw new Error("fetch");
-        setLb((await a.json()) as LB);
-        setPlays((await b.json()) as FeaturedPlay[]);
-      } catch { setErr(true); }
-    };
-    void load();
-  }, []);
-
   const nf = new Intl.NumberFormat(locale);
-  const f1 = new Intl.NumberFormat(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 });
-  const f0 = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
-  const m = lb?.meta;
-
-  const kpis = m ? [
-    { v: `+${f1.format(m.mismatch_sep_gain)} yd`, l: t("kpiGain"), h: t("kpiGainHelp") },
-    { v: `${f0.format(m.qb_ignores_optimal_pct)}%`, l: t("kpiIgnore"), h: t("kpiIgnoreHelp") },
-    { v: `${nf.format(m.plays)} / ${nf.format(m.routes)}`, l: t("kpiVolume"), h: t("kpiVolumeHelp", { n: nf.format(m.mismatch_routes) }) },
-    { v: `${f0.format(m.ots_mismatch_avg)} vs ${f0.format(m.ots_other_avg)}`, l: t("kpiOts"), h: t("kpiOtsHelp") },
+  const f1 = new Intl.NumberFormat(locale, {maximumFractionDigits: 1});
+  const f2 = new Intl.NumberFormat(locale, {maximumFractionDigits: 2, signDisplay: "always"});
+  const stats: {value: string; label: string; note: string; help?: string}[] = radar ? [
+    {value: `+${f1.format(radar.lb.meta.mismatch_sep_gain)} yd`, label: t("kpiGain"), note: s("mismatch"), help: t("kpiGainHelp")},
+    {value: `${f2.format(radar.lb.meta.epa_when_optimal)} vs ${f2.format(radar.lb.meta.epa_when_not_optimal)} EPA`, label: t("kpiIgnore"), note: s("modelReference"), help: t("kpiIgnoreHelp", {pct: f1.format(radar.lb.meta.qb_ignores_optimal_pct), baseline: f1.format(radar.lb.meta.qb_ignores_random_baseline_pct)})},
+    {value: nf.format(radar.lb.meta.plays), label: s("plays"), note: s("passOnly")},
+    {value: nf.format(radar.lb.meta.routes), label: s("routes"), note: s("allPositions")},
+  ] : fallback ? [
+    {value: nf.format(fallback.players.meta.n_plays), label: s("plays"), note: s("passOnly")},
+    {value: nf.format(fallback.players.meta.n_routes), label: s("routes"), note: s("routesNote")},
+    {value: nf.format(fallback.players.meta.n_players), label: s("players"), note: s("positionsNote")},
+    {value: nf.format(fallback.overlooked.meta.n_overlooked), label: s("overlooked"), note: s("overlookedNote")},
   ] : [];
-
-  return (
-    <div className="mx-auto flex max-w-[1500px] flex-col gap-4">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: NEON }}>{t("kicker")}</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight md:text-3xl">{t("title")}</h1>
-        <p className="mt-1 max-w-4xl text-sm text-muted-foreground">
-          {t("pitch")}{" "}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button type="button" className="inline-flex items-center gap-1 font-semibold text-foreground underline decoration-dotted">
-                {t("otsName")}<Info className="size-3.5" aria-hidden />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-sm text-sm">{t("otsDef")}</TooltipContent>
-          </Tooltip>
-        </p>
-        <p className="mt-1 max-w-4xl text-xs text-muted-foreground">{t("otsDef")}</p>
-      </header>
-
-      {err && <p role="alert" className="rounded-lg border border-destructive p-3 text-sm">{t("loadError")}</p>}
-      {!err && !lb && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
-
-      {m && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {kpis.map((k) => (
-            <Card key={k.l} size="sm" title={k.h}>
-              <CardContent>
-                <div className="num text-2xl font-extrabold md:text-3xl" style={{ color: NEON }}>{k.v}</div>
-                <div className="text-sm font-semibold">{k.l}</div>
-                <div className="text-xs text-muted-foreground">{k.h}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {lb && plays && (
-        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          <Leaderboard players={lb.players} />
-          {plays.length > 0 ? <FieldReplay plays={plays} /> : <p className="text-sm text-muted-foreground">{t("noPlays")}</p>}
-        </div>
-      )}
-      <p className="text-xs text-muted-foreground">{t("honesty")}</p>
+  return <div className="flex flex-col gap-6">
+    <header className="page-heading !mb-0 flex flex-wrap items-start justify-between gap-5">
+      <div><h1>{s("title")}</h1><p>{s("intro")}</p></div>
+      <Button asChild className="gap-2"><Link href="/gameplan">{s("prepare")}<ArrowRight className="size-4" /></Link></Button>
+    </header>
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+      <span className="inline-flex items-center gap-2"><CalendarDays className="size-3.5" />{m("season")}</span>
+      <span className="rounded-md border bg-card px-2 py-1 font-medium">{radar ? "Optimal Target Score" : "Separation Over Expected"}</span>
+      <Link href="/method" className="ml-auto inline-flex items-center gap-1.5 hover:text-primary">{s("methodLink")}<ArrowUpRight className="size-3" /></Link>
     </div>
-  );
+    {stats.length > 0 && <div className="dashboard-stats">{stats.map((k,i)=><div className="dashboard-stat" key={k.label}>
+      <div className="dashboard-stat-label">{k.label}{k.help && <Tooltip><TooltipTrigger asChild><button aria-label={k.label} type="button"><Info className="size-3.5" /></button></TooltipTrigger><TooltipContent className="max-w-72">{k.help}</TooltipContent></Tooltip>}</div>
+      <div className={`dashboard-stat-value num ${i===3 ? "text-primary" : ""}`}>{k.value}</div><div className="dashboard-stat-note">{k.note}</div>
+    </div>)}</div>}
+    {radar ? <div className="radar-grid">{radar.plays.length > 0 && <FieldReplay plays={radar.plays} />}<Leaderboard players={radar.lb.players} /></div>
+      : fallback ? <div className="radar-grid"><Replays replays={fallback.replays} compact /><CoachLeaderboard data={fallback.players} /></div>
+      : <div role="alert" className="rounded-xl border bg-card p-8 text-sm text-muted-foreground">{s("dataUnavailable")}</div>}
+    <div className="flex flex-col gap-5 rounded-xl bg-secondary px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+      <div><h2 className="text-base font-bold text-secondary-foreground">{s("nextTitle")}</h2><p className="mt-1 text-sm text-secondary-foreground">{s("nextDesc")}</p></div>
+      <div className="flex flex-wrap gap-3"><Button asChild variant="outline"><Link href="/defenses"><Shield className="size-4" />{s("scoutDefense")}</Link></Button><Button asChild variant="ghost"><Link href="/players"><Users className="size-4" />{s("comparePlayers")}</Link></Button></div>
+    </div>
+    <details className="note-disclosure"><summary>{s("readingNote")}</summary><p>{radar ? t("honesty") : s("soeNote")}</p></details>
+  </div>;
 }

@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Moon, Search, Sun } from "lucide-react";
+import { ChevronRight, Moon, Search, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -13,13 +12,15 @@ import CommandSearch from "./CommandSearch";
 
 export default function TopBar() {
   const t = useTranslations("Shell");
+  const nav = useTranslations("Nav");
+  const s = useTranslations("Studio");
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const params = useSearchParams();
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(true);
-
+  const [dark, setDark] = useState(false);
+  const current = pathname.split("/")[1] || "overview";
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
     const onKey = (e: KeyboardEvent) => {
@@ -28,32 +29,30 @@ export default function TopBar() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-
   function toggleTheme() {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
     try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
   }
-
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-4 backdrop-blur">
-      <SidebarTrigger aria-label={t("toggleMenu")} />
-      <Separator orientation="vertical" className="mx-1 h-5" />
-      <Button variant="outline" className="h-9 flex-1 justify-start gap-2 text-muted-foreground sm:max-w-sm" onClick={() => setOpen(true)}>
-        <Search data-icon="inline-start" />
-        <span className="truncate">{t("search")}</span>
-        <kbd className="ml-auto hidden rounded border bg-muted px-1.5 text-xs sm:inline">⌘K</kbd>
+    <header className="sticky top-0 z-30 flex min-h-18 items-center gap-3 border-b bg-background px-4 md:px-7 lg:px-9">
+      <SidebarTrigger aria-label={t("toggleMenu")} className="text-muted-foreground" />
+      <div className="hidden items-center gap-2 text-xs sm:flex">
+        <span className="hidden text-muted-foreground lg:inline">{s("workspace")}</span><ChevronRight className="hidden size-3 text-muted-foreground lg:block" />
+        <span className="font-semibold">{nav(["overview", "gameplan", "players", "defenses", "replays", "method"].includes(current) ? current : "overview")}</span>
+      </div>
+      <Button variant="ghost" className="ml-auto min-w-0 justify-start gap-2 text-muted-foreground md:w-64" onClick={() => setOpen(true)} aria-label={t("search")}>
+        <Search className="size-4" /><span className="hidden truncate text-xs md:inline">{t("search")}</span>
+        <kbd className="ml-auto hidden rounded border bg-card px-1.5 py-0.5 text-[.625rem] md:inline">⌘ K</kbd>
       </Button>
-      <div className="ml-auto flex items-center gap-2">
-        <ToggleGroup type="single" variant="outline" size="sm" value={locale} aria-label={t("language")}
+      <div className="flex items-center gap-2 border-l pl-3">
+        <ToggleGroup type="single" size="sm" value={locale} aria-label={t("language")}
           onValueChange={(v) => v && router.replace({ pathname, query: Object.fromEntries(params.entries()) }, { locale: v })}>
-          {routing.locales.map((l) => (
-            <ToggleGroupItem key={l} value={l} className="px-3 uppercase">{l}</ToggleGroupItem>
-          ))}
+          {routing.locales.map((l) => <ToggleGroupItem key={l} value={l} className="min-h-9 px-2.5 text-xs font-semibold uppercase">{l}</ToggleGroupItem>)}
         </ToggleGroup>
-        <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t("theme")}>
-          {dark ? <Sun /> : <Moon />}
+        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t("theme")} title={t("theme")} className="text-muted-foreground">
+          {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
       </div>
       <CommandSearch open={open} onOpenChange={setOpen} />

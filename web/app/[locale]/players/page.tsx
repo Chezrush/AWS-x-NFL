@@ -11,10 +11,12 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const prof = await loadProfiles();
   if (!prof) return <Empty><EmptyHeader><EmptyTitle>{t("missingTitle")}</EmptyTitle><EmptyDescription>{t("missingDesc")}</EmptyDescription></EmptyHeader></Empty>;
   return (
-    <div className="mx-auto mb-4 max-w-7xl">
-      <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{t("title")}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t("intro", { n: prof.players.length })}</p>
-      <div className="mt-4"><PlayersTable players={prof.players} /></div>
+    <div className="mx-auto flex max-w-7xl flex-col gap-7">
+      <header className="page-heading">
+        <h1>{t("title")}</h1>
+        <p className="max-w-3xl text-muted-foreground">{t("intro", { n: prof.players.length })}</p>
+      </header>
+      <PlayersTable players={prof.players} />
     </div>
   );
 }

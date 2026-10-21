@@ -43,7 +43,7 @@ export default function PlayerDrawer() {
 
   return (
     <Sheet open={playerId !== null} onOpenChange={(o) => !o && close()}>
-      <SheetContent side="right" className="w-full overflow-y-auto data-[side=right]:sm:max-w-3xl">
+      <SheetContent side="right" closeLabel={t("close")} className="player-drawer w-full gap-0 overflow-y-auto bg-background data-[side=right]:w-full data-[side=right]:sm:max-w-3xl">
         {p ? <Body p={p} /> : (
           <>
             <SheetHeader>
@@ -72,14 +72,14 @@ function Body({ p }: { p: PlayerProfile }) {
 
   const kpi = (id: "soe_all" | "soe_man" | "soe_zone", value: number | null, n: number, pctl?: number | null, rank?: string) => (
     <Card size="sm">
-      <CardContent className="flex flex-col items-start gap-1">
+      <CardContent className="flex flex-col items-start gap-3">
         <Metric id="soe" label={t(id)} />
         {value == null ? (
           <div className="text-base font-semibold capitalize text-muted-foreground">{t("insufficientShort")}</div>
         ) : (
-          <div className="num text-3xl font-extrabold text-primary">{x.soe(value)} <span className="text-sm font-medium text-muted-foreground">{t("yds")}</span></div>
+          <div className="num text-[1.75rem] font-semibold leading-tight tracking-tight text-primary">{x.soe(value)} <span className="text-sm font-medium text-muted-foreground">{t("yds")}</span></div>
         )}
-        <div className="num text-sm text-muted-foreground">
+        <div className="num text-xs leading-relaxed text-muted-foreground">
           {t("n", { n })}{rank ? ` · ${rank}` : ""}{pctl != null ? ` · ${t("percentile", { p: Math.round(pctl) })}` : ""}
         </div>
       </CardContent>
@@ -87,24 +87,24 @@ function Body({ p }: { p: PlayerProfile }) {
   );
 
   const stat = (id: string, v: string | null, extra?: React.ReactNode) => (
-    <div className="flex flex-col items-start gap-0.5 rounded-lg bg-muted/50 p-3">
+    <div className="flex min-w-0 flex-col items-start gap-3 border-b py-4">
       <Metric id={id} />
-      <div className="num text-xl font-bold">{v ?? t("na")}{extra}</div>
+      <div className="num flex flex-wrap items-baseline gap-1 text-xl font-semibold">{v ?? t("na")}{extra}</div>
     </div>
   );
-  const lowBadge = <Badge variant="outline" className="ml-2 align-middle text-xs">{t("smallSample")}</Badge>;
+  const lowBadge = <Badge variant="outline" className="align-middle text-xs">{t("smallSample")}</Badge>;
 
   return (
     <>
-      <SheetHeader className="gap-2">
+      <SheetHeader className="gap-3 border-b bg-card px-5 py-7 pr-12 sm:px-7 sm:pr-14">
+        <SheetTitle className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">{p.name}</SheetTitle>
         <div className="flex flex-wrap items-center gap-2">
-          <SheetTitle className="text-2xl font-extrabold">{p.name}</SheetTitle>
           <Badge variant={tierVariant[p.tier]}>{tier(p.tier)}</Badge>
           {p.low_n && <Badge variant="outline">{t("lowN", { n: p.routes })}</Badge>}
         </div>
-        <SheetDescription>{bio}</SheetDescription>
+        <SheetDescription className="max-w-xl text-sm leading-relaxed">{bio}</SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-4 px-4 pb-6">
+      <div className="flex min-w-0 flex-col gap-6 px-5 py-6 sm:px-7">
         {p.low_n && (
           <Alert><AlertDescription>{t("lowNWarn")}</AlertDescription></Alert>
         )}
@@ -115,14 +115,16 @@ function Body({ p }: { p: PlayerProfile }) {
         </div>
 
         <Tabs defaultValue="summary">
-          <TabsList className="flex h-auto w-full flex-wrap justify-start">
-            {(["summary", "coverage", "alignment", "trend", "plays"] as const).map((k) => (
-              <TabsTrigger key={k} value={k}>{t(`tab.${k}`)}</TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="max-w-full overflow-x-auto pb-1">
+            <TabsList className="flex h-auto w-max min-w-full justify-start gap-1 p-1">
+              {(["summary", "coverage", "alignment", "trend", "plays"] as const).map((k) => (
+                <TabsTrigger key={k} value={k} className="min-h-10 px-3">{t(`tab.${k}`)}</TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-          <TabsContent value="summary" className="mt-4 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <TabsContent value="summary" className="mt-5 flex flex-col gap-7">
+            <div className="grid grid-cols-2 gap-x-6 sm:grid-cols-3">
               {stat("routes", x.int(p.routes))}
               {stat("targets", x.int(p.targets))}
               {stat("receptions", x.int(p.receptions))}
@@ -138,10 +140,10 @@ function Body({ p }: { p: PlayerProfile }) {
                 <span className="ml-1 text-sm font-medium text-muted-foreground">{t("expectedTargets", { n: Math.round(p.expected_targets) })}</span>
               ))}
             </div>
-            <div className="flex flex-col gap-3">
-              <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("percentiles", { pos: p.position })}</h3>
+            <div className="flex flex-col gap-4 rounded-xl border bg-card p-5">
+              <h3 className="text-base font-semibold">{t("percentiles", { pos: p.position })}</h3>
               {([["soe_all", p.pct_soe_all], ["target_rate", p.pct_target_rate], ["epa", p.pct_epa]] as const).map(([id, v]) => (
-                <div key={id} className="flex flex-col gap-1">
+                <div key={id} className="flex flex-col gap-2">
                   <div className="flex justify-between text-sm"><Metric id={id === "soe_all" ? "soe" : id} /><span className="num font-semibold">{v == null ? t("na") : Math.round(v)}</span></div>
                   <Progress value={v ?? 0} />
                 </div>
@@ -194,9 +196,9 @@ function CoverageTab({ p }: { p: PlayerProfile }) {
         </TableRow></TableHeader>
         <TableBody>
           {rows.map((r) => (
-            <TableRow key={r.coverage} className={r.routes < 10 ? "opacity-60" : ""}>
+            <TableRow key={r.coverage}>
               <TableCell className="font-medium">{r.coverage} <span className="text-muted-foreground">({c(r.type === "man" ? "man" : "zoneOther")})</span></TableCell>
-              <TableCell className="num text-right">{r.routes}</TableCell>
+              <TableCell className="num text-right">{r.routes}{r.routes < 10 && " *"}</TableCell>
               <TableCell className="num text-right">{x.soe(r.soe)}</TableCell>
               <TableCell className="num text-right">{r.targets}</TableCell>
               <TableCell className="num text-right">{r.targets < 5 ? t("na") : x.n2(r.epa_per_target)}</TableCell>
@@ -234,9 +236,9 @@ function AlignmentTab({ p }: { p: PlayerProfile }) {
         </TableRow></TableHeader>
         <TableBody>
           {data.map((r) => (
-            <TableRow key={r.name} className={r.routes < 10 ? "opacity-60" : ""}>
+            <TableRow key={r.name}>
               <TableCell className="font-medium">{r.name}</TableCell>
-              <TableCell className="num text-right">{r.routes}</TableCell>
+              <TableCell className="num text-right">{r.routes}{r.routes < 10 && " *"}</TableCell>
               <TableCell className="num text-right">{x.soe(r.soe)}</TableCell>
               <TableCell className="num text-right">{r.targets}</TableCell>
             </TableRow>
@@ -286,7 +288,7 @@ function PlaysTab({ p }: { p: PlayerProfile }) {
               <span>{t("playMeta", { week: b.week, opp: b.opponent, down: b.down, ytg: b.yards_to_go })}</span>
               <Badge variant="outline">{b.coverage}</Badge>
             </div>
-            <p lang="en" className="text-base italic">{b.description}</p>
+            <p lang="en" className="text-sm leading-relaxed">{b.description}</p>
             <div className="num flex flex-wrap items-center gap-x-6 gap-y-1">
               <span>{t("sep")}: <strong>{x.n1(b.sep)} {t("yds")}</strong></span>
               <span>SOE: <strong className="text-primary">{x.soe(b.soe)}</strong></span>

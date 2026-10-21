@@ -23,10 +23,10 @@ export default function Insight({ play }: { play: FeaturedPlay }) {
       : t("insightMiss", { ...common, tgtPos: posOf(tgt.nflId), tgtOts: tgt.ots });
   }
   return (
-    <div className="flex gap-3 rounded-xl border p-3" style={{ borderColor: "#39FF1455", background: "#39FF140d" }}>
-      <Lightbulb className="mt-0.5 size-5 shrink-0" style={{ color: "#39FF14" }} aria-hidden />
+    <div className="flex gap-3 rounded-xl border border-border bg-secondary p-4">
+      <Lightbulb className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
       <div>
-        <div className="text-xs font-bold uppercase tracking-widest" style={{ color: "#39FF14" }}>{t("insightTitle")}</div>
+        <div className="text-sm font-bold text-primary">{t("insightTitle")}</div>
         <p className="mt-0.5 text-sm">{text}</p>
       </div>
     </div>

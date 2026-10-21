@@ -8,7 +8,7 @@ import type { LeaderPlayer } from "@/lib/radar";
 
 type Filter = "all" | "WR" | "TE" | "RB";
 type SortKey = "displayName" | "position" | "avg_ots" | "optimal_target_rate" | "unexploited_rate" | "routes_run" | "mismatch_win_rate";
-const NEON = "#39FF14";
+const NEON = "var(--primary)";
 
 export default function Leaderboard({ players }: { players: LeaderPlayer[] }) {
   const t = useTranslations("Radar");
@@ -53,7 +53,7 @@ export default function Leaderboard({ players }: { players: LeaderPlayer[] }) {
             </Button>
           ))}
           <Button size="sm" variant={mm ? "default" : "outline"} aria-pressed={mm} onClick={() => setMm((v) => !v)}
-            style={mm ? { background: NEON, color: "#000" } : undefined}>{t("mismatchOnly")}</Button>
+            style={mm ? { background: NEON, color: "var(--primary-foreground)" } : undefined}>{t("mismatchOnly")}</Button>
         </div>
         <p className="text-xs text-muted-foreground">{mm ? t("minMismatch") : t("minRoutes")}</p>
       </CardHeader>
@@ -73,21 +73,21 @@ export default function Leaderboard({ players }: { players: LeaderPlayer[] }) {
           <tbody>
             {rows.map((p) => (
               <tr key={p.nflId} className="border-t border-border/60">
-                <td className="px-2 py-1.5"><div className="font-semibold">{p.displayName}</div><div className="text-xs text-muted-foreground">{p.team}</div></td>
-                <td className="px-2 py-1.5">{p.position}</td>
-                <td className="num px-2 py-1.5 text-right font-bold">{f0.format(p.avg_ots)}</td>
-                <td className="px-2 py-1.5" title={t("bestVsActualTitle", { best: f1.format(p.optimal_target_rate), actual: f1.format(p.actual_target_rate) })}>
+                <td className="px-2 py-3"><div className="font-semibold">{p.displayName}</div><div className="text-xs text-muted-foreground">{p.team}</div></td>
+                <td className="px-2 py-3">{p.position}</td>
+                <td className="num px-2 py-3 text-right font-bold">{f0.format(p.avg_ots)}</td>
+                <td className="px-2 py-3" title={t("bestVsActualTitle", { best: f1.format(p.optimal_target_rate), actual: f1.format(p.actual_target_rate) })}>
                   <div className="flex items-center gap-1.5">
-                    <div className="flex w-20 flex-col gap-0.5" aria-hidden>
+                    <div className="hidden flex-col gap-0.5" aria-hidden>
                       <div className="h-1.5 rounded-full" style={{ width: `${Math.min(100, p.optimal_target_rate * 2.5)}%`, background: NEON }} />
                       <div className="h-1.5 rounded-full bg-muted-foreground/50" style={{ width: `${Math.min(100, p.actual_target_rate * 2.5)}%` }} />
                     </div>
-                    <span className="num text-xs">{f1.format(p.optimal_target_rate)} / {f1.format(p.actual_target_rate)}</span>
+                    <span className="num whitespace-nowrap text-xs">{f1.format(p.optimal_target_rate)} / {f1.format(p.actual_target_rate)}</span>
                   </div>
                 </td>
-                <td className="num px-2 py-1.5 text-right font-bold" style={{ color: p.unexploited_rate > 0 ? NEON : undefined }}>{fd.format(p.unexploited_rate)}</td>
-                {mm && <td className="num px-2 py-1.5 text-right">{f0.format(p.mismatch_win_rate)}%</td>}
-                <td className="num px-2 py-1.5 text-right text-muted-foreground">{mm ? `${p.mismatch_routes}/${p.routes_run}` : p.routes_run}</td>
+                <td className="num px-2 py-3 text-right font-bold" style={{ color: p.unexploited_rate > 0 ? NEON : undefined }}>{fd.format(p.unexploited_rate)}</td>
+                {mm && <td className="num px-2 py-3 text-right">{f0.format(p.mismatch_win_rate)}%</td>}
+                <td className="num px-2 py-3 text-right text-muted-foreground">{mm ? `${p.mismatch_routes}/${p.routes_run}` : p.routes_run}</td>
               </tr>
             ))}
             {rows.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-muted-foreground">{t("empty")}</td></tr>}

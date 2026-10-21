@@ -2,6 +2,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +11,16 @@ import type { Replay as R } from "@/lib/data";
 
 const FIELD_W = 53.3;
 
-export default function Replays({ replays }: { replays: R[] }) {
+export default function Replays({ replays, compact = false }: { replays: R[]; compact?: boolean }) {
+  const t = useTranslations("Studio");
+  if (!replays.length) return <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">{t("noReplays")}</p>;
+  return <ReplayView replays={replays} compact={compact} />;
+}
+
+function ReplayView({ replays, compact }: { replays: R[]; compact: boolean }) {
   const t = useTranslations("Replay");
   const c = useTranslations("Coverage");
+  const studio = useTranslations("Studio");
   const locale = useLocale();
   const sp = useSearchParams();
   const initial = Number(sp.get("play"));
@@ -30,16 +39,13 @@ export default function Replays({ replays }: { replays: R[] }) {
   useEffect(() => {
     if (!playing) return;
     let prev = performance.now();
+    let cursor = frame;
     const tick = (now: number) => {
       const dt = (now - prev) / 1000;
       prev = now;
-      let done = false;
-      setFrame((f) => {
-        const nf = f + dt * r.hz;
-        if (nf >= last) { done = true; return last; }
-        return nf;
-      });
-      if (done) setPlaying(false);
+      cursor = Math.min(last, cursor + dt * r.hz);
+      setFrame(cursor);
+      if (cursor >= last) setPlaying(false);
       else raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
@@ -80,54 +86,66 @@ export default function Replays({ replays }: { replays: R[] }) {
   const fmtTime = (f: number) => `${(f / r.hz).toFixed(1)}s`;
 
   const legend = [
-    ["#fbbf24", t("legendTarget"), true],
-    ["#f43f5e", t("legendClosest"), true],
-    ["#4ade80", t("legendOffense"), false],
-    ["#fb923c", t("legendDefense"), false],
+    ["#efd17c", t("legendTarget"), true],
+    ["#ee9394", t("legendClosest"), true],
+    ["#9dd1b5", t("legendOffense"), false],
+    ["#e6b07b", t("legendDefense"), false],
     ["#ffffff", t("legendBall"), false],
   ] as const;
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{t("title")}</h1>
-        <p className="mt-1 max-w-3xl text-muted-foreground">{t("intro")}</p>
+    <div className={compact ? "min-w-0 rounded-xl border bg-card p-5" : "mx-auto flex max-w-7xl flex-col gap-7"}>
+      {!compact && <header className="page-heading">
+        <h1>{t("title")}</h1>
+        <p className="max-w-3xl text-muted-foreground">{t("intro")}</p>
+      </header>}
+
+      {compact && <div className="mb-5 flex items-center justify-between gap-3"><h2 className="text-base font-bold">{studio("replayTitle")}</h2><span className="rounded-md bg-secondary px-2 py-1 text-xs font-semibold text-secondary-foreground">{studio("tracking")}</span></div>}
+      <div className={compact ? "mb-5 flex flex-wrap items-end gap-3" : "flex flex-col gap-3 rounded-xl border bg-card p-5 sm:flex-row sm:items-end sm:justify-between"}>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:max-w-xl">
+          <label htmlFor="replay-select" className="text-sm font-semibold">{t("choose")}</label>
+          <Select value={String(idx)} onValueChange={(value) => setIdx(Number(value))}>
+            <SelectTrigger id="replay-select" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {replays.map((p, i) => <SelectItem key={p.playId + "-" + p.gameId} value={String(i)}>{p.offense} vs {p.defense} · {t("weekN", { n: p.week })} · {t("downDist", { down: p.down, ytg: p.yardsToGo })}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          {!compact && <span className="num mr-2 text-sm text-muted-foreground">{t("playCount", { current: idx + 1, total: replays.length })}</span>}
+          <Button variant="outline" size="icon" disabled={idx === 0} onClick={() => setIdx((value) => value - 1)} aria-label={t("prev")}><ChevronLeft /></Button>
+          <Button variant="outline" size="icon" disabled={idx === replays.length - 1} onClick={() => setIdx((value) => value + 1)} aria-label={t("next")}><ChevronRight /></Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4" role="list" aria-label={t("choose")}>
-        {replays.map((p, i) => (
-          <button key={p.playId + "-" + p.gameId} role="listitem" onClick={() => setIdx(i)} aria-pressed={i === idx}
-            className={`rounded-xl border p-3 text-left transition-colors hover:bg-muted/60 ${i === idx ? "border-primary bg-primary/10" : "bg-card"}`}>
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-bold">{p.offense} <span className="text-muted-foreground">vs</span> {p.defense}</span>
-              <Badge variant="outline" className="num">{t("weekN", { n: p.week })}</Badge>
+      <div className={compact ? "min-w-0" : "grid items-start gap-6 lg:grid-cols-12"}>
+        <div className={compact ? "min-w-0" : "min-w-0 rounded-xl border bg-card p-4 sm:p-5 lg:col-span-8"}>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">{r.offense} <span className="font-normal text-muted-foreground">vs</span> {r.defense}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{r.target.name} · {r.coverage}</p>
             </div>
-            <div className="num mt-1 text-sm text-muted-foreground">{t("downDist", { down: p.down, ytg: p.yardsToGo })} · {p.coverage}</div>
-            <div className="num mt-1 text-xl font-extrabold text-primary">{sg.format(p.soe)} <span className="text-xs font-medium text-muted-foreground">SOE</span></div>
-          </button>
-        ))}
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+            <Badge variant="secondary">{t("weekN", { n: r.week })}</Badge>
+          </div>
           <svg viewBox={`${bounds.x0} ${bounds.y0} ${W} ${bounds.y1 - bounds.y0}`} role="img" aria-label={t("field")}
-            className="mx-auto max-h-[640px] w-full rounded-xl border bg-[#0f2a1f]">
+            className={`mx-auto w-full rounded-lg bg-[#193d2e] ${compact ? "h-[300px] sm:h-[320px]" : "max-h-[580px]"}`}>
             {yardLines.map((x) => (
               <g key={x}>
                 <line x1={x} x2={x} y1={-5} y2={FIELD_W + 5} stroke="#ffffff" strokeOpacity={0.18} strokeWidth={0.15} />
-                <text x={x + 0.3} y={bounds.y1 - 1} fontSize={1.6} fill="#ffffff" fillOpacity={0.45}>{x > 60 ? 120 - x : x - 10}</text>
+                <text x={x + 0.3} y={bounds.y1 - 1} fontSize={1.6} fill="#ffffff" fillOpacity={0.7}>{x > 60 ? 120 - x : x - 10}</text>
               </g>
             ))}
             <line x1={r.los_x} x2={r.los_x} y1={-5} y2={FIELD_W + 5} stroke="#60a5fa" strokeWidth={0.3} />
             <line x1={r.first_down_x} x2={r.first_down_x} y1={-5} y2={FIELD_W + 5} stroke="#fde047" strokeWidth={0.3} strokeDasharray="1 0.8" />
             {r.players.map((p, i) => {
               const [x, y] = pos(i * 2);
-              const fill = p.side === "offense" ? "#4ade80" : "#fb923c";
-              const ring = p.role === "target" ? "#fbbf24" : p.role === "closest_defender" ? "#f43f5e" : null;
+              const fill = p.side === "offense" ? "#9dd1b5" : "#e6b07b";
+              const ring = p.role === "target" ? "#efd17c" : p.role === "closest_defender" ? "#ee9394" : null;
               return (
                 <g key={p.nflId}>
                   {ring && <circle cx={x} cy={y} r={1.9} fill="none" stroke={ring} strokeWidth={0.4} />}
-                  <circle cx={x} cy={y} r={0.9} fill={fill} stroke="#06120b" strokeWidth={0.15} />
+                  <circle cx={x} cy={y} r={1.05} fill={fill} stroke="#06120b" strokeWidth={0.15} />
+                  <text x={x} y={y + .38} fontSize={.95} fill="#112c1d" fontWeight={750} textAnchor="middle">{p.jersey}</text>
                 </g>
               );
             })}
@@ -140,48 +158,50 @@ export default function Replays({ replays }: { replays: R[] }) {
             )}
             <circle cx={ball[0]} cy={ball[1]} r={0.55} fill="#fff" stroke="#000" strokeWidth={0.12} />
           </svg>
-          <div className="mt-3 flex items-center gap-3">
-            <Button onClick={() => { if (!playing && fi >= last - 0.01) setFrame(0); setPlaying((p) => !p); }} className="w-28">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Button onClick={() => { if (!playing && fi >= last - 0.01) setFrame(0); setPlaying((p) => !p); }} className="w-28 shrink-0">
+              {playing ? <Pause className="size-4" /> : fi >= last - 0.01 ? <RotateCcw className="size-4" /> : <Play className="size-4" />}
               {playing ? t("pause") : fi >= last - 0.01 ? t("restart") : t("play")}
             </Button>
-            <input type="range" min={0} max={last} step={0.1} value={fi} aria-label={t("time")}
-              onChange={(e) => { setPlaying(false); setFrame(Number(e.target.value)); }} className="flex-1 accent-[#4ade80]" />
-            <span className="num w-28 text-right text-sm text-muted-foreground">{fmtTime(fi)} · {afterThrow ? t("afterThrow") : t("beforeThrow")}</span>
+            <input type="range" min={0} max={last} step={0.1} value={fi} aria-label={t("time")} aria-valuetext={fmtTime(fi)}
+              onChange={(e) => { setPlaying(false); setFrame(Number(e.target.value)); }} className="h-6 min-w-24 flex-1 cursor-pointer accent-primary" />
+            <span className="num w-full text-right text-xs text-muted-foreground sm:w-auto">{fmtTime(fi)} · {afterThrow ? t("afterThrow") : t("beforeThrow")}</span>
           </div>
-          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
+          <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t pt-4 text-xs text-muted-foreground">
             {legend.map(([col, label, ring]) => (
               <li key={label} className="flex items-center gap-2">
-                <span className="inline-block size-3.5 rounded-full" style={ring ? { border: `3px solid ${col}` } : { background: col }} />{label}
+                <span className="inline-block size-3.5 rounded-full" style={ring ? { border: `3px solid ${col}`, background: "#163b2c" } : { background: col, border: "1px solid #52665a" }} />{label}
               </li>
             ))}
           </ul>
+          {compact && <p className="mt-4 border-t pt-4 text-sm leading-relaxed"><strong className="font-semibold">{r.target.name}</strong> · <span className="font-semibold text-primary">{sg.format(r.soe)} yd SOE</span><span className="mt-1 block text-xs text-muted-foreground">{t("honesty")}</span></p>}
         </div>
 
-        <aside className="flex flex-col gap-4">
+        {!compact && <aside className="flex min-w-0 flex-col gap-5 lg:col-span-4">
           <Card size="sm">
             <CardHeader><CardTitle>{r.offense} vs {r.defense} · {t("weekN", { n: r.week })}</CardTitle>
               <CardDescription className="num">{t("downDist", { down: r.down, ytg: r.yardsToGo })} · Q{r.quarter}</CardDescription></CardHeader>
-            <CardContent className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-              <div><div className="num text-2xl font-extrabold">{nf.format(r.sep)}</div><div className="text-xs text-muted-foreground">{t("separation")}</div></div>
-              <div><div className="num text-2xl font-extrabold">{nf.format(r.expected_sep)}</div><div className="text-xs text-muted-foreground">{t("expected")}</div></div>
-              <div><div className="num text-2xl font-extrabold text-primary">{sg.format(r.soe)}</div><div className="text-xs text-muted-foreground">SOE</div></div>
-              <div><div className="num text-2xl font-extrabold">{sg2.format(r.epa)}</div><div className="text-xs text-muted-foreground">EPA</div></div>
+            <CardContent className="grid grid-cols-2 gap-x-5 gap-y-6">
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{nf.format(r.sep)}</div><div className="text-xs text-muted-foreground">{t("separation")}</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{nf.format(r.expected_sep)}</div><div className="text-xs text-muted-foreground">{t("expected")}</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight text-primary">{sg.format(r.soe)}</div><div className="text-xs text-muted-foreground">SOE</div></div>
+              <div><div className="num mb-1 text-[1.75rem] font-semibold tracking-tight">{sg2.format(r.epa)}</div><div className="text-xs text-muted-foreground">EPA</div></div>
             </CardContent>
           </Card>
           <Card size="sm">
-            <CardContent className="flex flex-col gap-1">
-              <div><span className="text-muted-foreground">{t("coverage")}:</span> <strong>{r.coverage}</strong> ({c(r.coverage_type === "man" ? "man" : "zoneOther")})</div>
-              <div><span className="text-muted-foreground">{t("target")}:</span> {r.target.name} · {r.target.pos}</div>
+            <CardContent className="flex flex-col gap-4 text-sm leading-relaxed">
+              <div><span className="mb-1 block text-xs text-muted-foreground">{t("coverage")}</span> <strong>{r.coverage}</strong> ({c(r.coverage_type === "man" ? "man" : "zoneOther")})</div>
+              <div><span className="mb-1 block text-xs text-muted-foreground">{t("target")}</span> {r.target.name} · {r.target.pos}</div>
             </CardContent>
           </Card>
           <Card size="sm">
             <CardContent>
               <div className="text-sm font-semibold text-muted-foreground">{t("description")}</div>
-              <p lang="en" className="mt-1 italic">{r.playDescription}</p>
+              <p lang="en" className="mt-2 text-sm leading-relaxed">{r.playDescription}</p>
             </CardContent>
           </Card>
-          <p className="text-sm text-muted-foreground">{t("honesty")}</p>
-        </aside>
+          <p className="text-xs leading-relaxed text-muted-foreground">{t("honesty")}</p>
+        </aside>}
       </div>
     </div>
   );

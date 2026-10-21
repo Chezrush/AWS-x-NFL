@@ -2,7 +2,7 @@ export type Pos = "WR" | "TE" | "RB";
 
 export type LeaderMeta = {
   plays: number; routes: number; mismatch_routes: number; mismatch_sep_gain: number;
-  qb_ignores_optimal_pct: number; ots_mismatch_avg: number; ots_other_avg: number;
+  qb_ignores_optimal_pct: number; qb_ignores_random_baseline_pct: number; epa_when_optimal: number; epa_when_not_optimal: number; ots_mismatch_avg: number; ots_other_avg: number;
 };
 export type LeaderPlayer = {
   nflId: number; displayName: string; position: Pos; team: string; routes_run: number; avg_ots: number;

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { Suspense } from "react";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -30,9 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export const viewport: Viewport = { themeColor: "#0a0f1a", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#172b23", width: "device-width", initialScale: 1 };
 
-const themeInit = `try{var t=localStorage.getItem("theme");if(t!=="light")document.documentElement.classList.add("dark")}catch(e){document.documentElement.classList.add("dark")}`;
+const themeInit = `try{document.documentElement.classList.toggle("dark",localStorage.getItem("theme")==="dark")}catch(e){}`;
 
 export default async function LocaleLayout({
   children,
@@ -46,17 +47,18 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={`${manrope.variable} dark`} suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: themeInit }} /></head>
+    <html data-scroll-behavior="smooth" lang={locale} className={manrope.variable} suppressHydrationWarning>
+      <head><Script id="theme-init" strategy="beforeInteractive">{themeInit}</Script></head>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:p-3">{locale === "fr" ? "Aller au contenu" : "Skip to content"}</a>
         <NextIntlClientProvider>
           <SwRegister />
           <TooltipProvider>
-            <SidebarProvider>
+            <SidebarProvider style={{ "--sidebar-width": "15.5rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
               <Suspense><AppSidebar /></Suspense>
               <SidebarInset>
                 <Suspense><TopBar /></Suspense>
-                <div className="flex-1 p-4 md:p-6">{children}</div>
+                <div id="main-content" className="app-content flex-1"><div className="mx-auto max-w-[1440px]">{children}</div></div>
               </SidebarInset>
             </SidebarProvider>
             <Suspense><PlayerDrawer /></Suspense>

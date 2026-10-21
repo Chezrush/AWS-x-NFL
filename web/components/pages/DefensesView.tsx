@@ -1,7 +1,10 @@
 "use client";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { ArrowUpRight, X } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
@@ -17,7 +20,6 @@ const DISTS = ["short", "medium", "long"] as const;
 export default function DefensesView({ data }: { data: TeamsData }) {
   const t = useTranslations("Defenses");
   const c = useTranslations("Coverage");
-  const pos = useTranslations("Pos");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -31,10 +33,20 @@ export default function DefensesView({ data }: { data: TeamsData }) {
   const tone = (d: number | null) => (d == null ? "" : d > 0 ? "text-primary" : "text-destructive");
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{t("title")}</h1>
-        <p className="mt-1 max-w-3xl text-muted-foreground">{t("intro")}</p>
+    <div className="mx-auto flex max-w-7xl flex-col gap-7">
+      <header className="page-heading">
+        <h1>{t("title")}</h1>
+        <p className="max-w-3xl text-muted-foreground">{t("intro")}</p>
+      </header>
+      <div className="flex flex-col gap-2 sm:max-w-xs">
+        <label htmlFor="defense-report" className="text-sm font-semibold">{t("choose")}</label>
+        <Select value={sel ?? "all"} onValueChange={(value) => router.push({ pathname, query: value === "all" ? {} : { team: value } }, { scroll: false })}>
+          <SelectTrigger id="defense-report" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("allTitle")}</SelectItem>
+            {Object.keys(data.teams).sort().map((team) => <SelectItem key={team} value={team}>{team}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       {sel && <Report team={sel} data={data} />}
@@ -45,7 +57,7 @@ export default function DefensesView({ data }: { data: TeamsData }) {
           <CardDescription>{t("rankNote")}</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
+          <Table className="min-w-[540px]">
             <TableHeader><TableRow>
               <TableHead>{t("rank")}</TableHead><TableHead>{t("team")}</TableHead>
               <TableHead className="text-right"><Metric id="soe_allowed" label={t("soeVsLeague")} /></TableHead>
@@ -55,11 +67,11 @@ export default function DefensesView({ data }: { data: TeamsData }) {
               {rows.map(({ k, d }) => {
                 const dv = vs(d.soe_allowed, lg.soe_allowed);
                 return (
-                  <TableRow key={k} tabIndex={0} data-state={sel === k ? "selected" : undefined} className="cursor-pointer"
+                  <TableRow key={k} tabIndex={0} data-state={sel === k ? "selected" : undefined} className="cursor-pointer focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
                     onClick={() => router.push({ pathname, query: { team: k } }, { scroll: true })}
                     onKeyDown={(e) => { if (e.key === "Enter") router.push({ pathname, query: { team: k } }); }}>
                     <TableCell className="num font-bold">{d.rank_soe_allowed ?? "—"}</TableCell>
-                    <TableCell className="font-semibold">{k}</TableCell>
+                    <TableCell className="font-semibold"><span className="flex items-center gap-3">{k}<ArrowUpRight aria-hidden="true" className="size-3.5 text-muted-foreground" /></span></TableCell>
                     <TableCell className={`num text-right font-semibold ${tone(dv)}`}>{sg(dv)}</TableCell>
                     <TableCell className="num text-right">{n0.format(d.pct_man)}%</TableCell>
                     <TableCell className="num text-right text-muted-foreground">{d.pass_plays_faced}</TableCell>
@@ -86,10 +98,10 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
   const dv = (a: number | null | undefined, b: number | null | undefined) => (a == null || b == null ? null : a - b);
   const tone = (x: number | null) => (x == null ? "" : x > 0 ? "text-primary" : "text-destructive");
   const kp = (label: React.ReactNode, value: React.ReactNode, sub: string, cls = "") => (
-    <Card size="sm"><CardContent>
-      <div className="text-sm">{label}</div>
-      <div className={`num text-3xl font-extrabold ${cls}`}>{value}</div>
-      <div className="text-sm text-muted-foreground">{sub}</div>
+    <Card size="sm"><CardContent className="flex flex-col gap-3">
+      <div className="text-sm font-medium">{label}</div>
+      <div className={`num text-[1.75rem] font-semibold leading-tight tracking-tight ${cls}`}>{value}</div>
+      <div className="text-xs leading-relaxed text-muted-foreground">{sub}</div>
     </CardContent></Card>
   );
   const mix = d.coverage_mix.slice(0, 7).map((m) => ({
@@ -99,20 +111,22 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
   const dSoe = dv(d.soe_allowed, lg.soe_allowed);
 
   return (
-    <section className="flex flex-col gap-4" aria-labelledby="rep">
-      <h2 id="rep" className="flex flex-wrap items-baseline gap-3 text-2xl font-extrabold">
-        {t("report", { team })}
-        <Badge variant="outline" className="num">{t("plays")}: {d.pass_plays_faced}</Badge>
-        <Link href="/defenses" className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline">{t("close")}</Link>
-      </h2>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <section className="flex flex-col gap-5 border-t pt-7" aria-labelledby="rep">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 id="rep" className="text-xl font-semibold tracking-tight">{t("report", { team })}</h2>
+          <Badge variant="secondary" className="num">{t("plays")}: {d.pass_plays_faced}</Badge>
+        </div>
+        <Button variant="ghost" size="sm" asChild><Link href="/defenses"><X className="size-4" />{t("close")}</Link></Button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kp(<Metric id="rank" label={t("rankLabel")} />, <>{d.rank_soe_allowed ?? "—"}<span className="text-base font-medium text-muted-foreground"> / 32</span></>, t("rankHelp"))}
         {kp(<Metric id="soe_allowed" label={t("soeVsLeague")} />, sg(dSoe), c("man") + " " + sg(dv(d.soe_allowed_man, lg.soe_allowed_man)) + " · " + c("zone") + " " + sg(dv(d.soe_allowed_zone, lg.soe_allowed_zone)), tone(dSoe))}
         {kp(<Metric id="epa_allowed" label={t("epaVsLeague")} />, sg(dv(d.epa_allowed_per_pass, lg.epa_allowed_per_pass)), t("epaHelp"), tone(dv(d.epa_allowed_per_pass, lg.epa_allowed_per_pass)))}
         {kp(<span>{c("man")} / {c("zoneOther")}</span>, `${n0.format(d.pct_man)}% / ${n0.format(100 - d.pct_man)}%`, t("leagueMan", { pct: n0.format(lg.pct_man) }))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-5 xl:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>{t("mixTitle")}</CardTitle><CardDescription>{t("mixDesc")}</CardDescription></CardHeader>
           <CardContent>
@@ -142,11 +156,11 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
                     {DISTS.map((ds) => {
                       const s = d.by_down_distance[`${dn}_${ds}`];
                       if (!s) return <TableCell key={ds} className="text-center text-muted-foreground">—</TableCell>;
-                      const a = Math.min(0.75, (s.pct_man / 100) * 0.9);
+                      const a = Math.min(0.3, (s.pct_man / 100) * 0.4);
                       return (
-                        <TableCell key={ds} className={`text-center ${s.n < 8 ? "opacity-50" : ""}`}
+                        <TableCell key={ds} className="text-center"
                           style={{ background: `color-mix(in oklab, var(--chart-2) ${Math.round(a * 100)}%, transparent)` }}>
-                          <div className="num font-bold">{n0.format(s.pct_man)}% {c("man")}</div>
+                          <div className="num font-semibold">{n0.format(s.pct_man)}% {c("man")}{s.n < 8 && " *"}</div>
                           <div className="num text-xs text-muted-foreground">n={s.n} · {s.top_coverage}</div>
                         </TableCell>
                       );
@@ -161,7 +175,7 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
 
         <Card>
           <CardHeader><CardTitle>{t("vulnTitle")}</CardTitle><CardDescription>{t("vulnDesc")}</CardDescription></CardHeader>
-          <CardContent className="grid grid-cols-3 gap-3">
+          <CardContent className="grid gap-4 sm:grid-cols-3">
             {(["WR", "TE", "RB"] as Pos[]).map((p) => {
               const v = d.vulnerable_positions[p]; const l = lg.vulnerable_positions[p];
               const x = dv(v, l);
@@ -181,9 +195,9 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
           <CardContent>
             <ol className="flex flex-col gap-2">
               {d.worst_matchups.map((w, i) => (
-                <li key={w.nflId} className="flex items-center gap-3 rounded-lg bg-muted/40 p-3">
+                <li key={w.nflId} className="flex flex-wrap items-center gap-3 border-b py-3 first:pt-0 last:border-0 last:pb-0">
                   <span className="num w-5 font-bold text-muted-foreground">{i + 1}</span>
-                  <PlayerLink id={w.nflId}>{w.name}</PlayerLink>
+                  <PlayerLink id={w.nflId} className="min-w-0">{w.name}</PlayerLink>
                   <span className="text-sm text-muted-foreground">{w.team}</span>
                   <span className="num ml-auto font-bold text-primary">{sg(w.soe, 1)}</span>
                   <Badge variant="outline" className="num">{t("routesN", { n: w.routes })}</Badge>
@@ -193,21 +207,22 @@ function Report({ team, data }: { team: string; data: TeamsData }) {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card className="xl:col-span-2">
           <CardHeader><CardTitle>{t("formTitle")}</CardTitle></CardHeader>
           <CardContent>
             <Table>
               <TableHeader><TableRow><TableHead>{t("formation")}</TableHead><TableHead className="text-right">{t("plays")}</TableHead><TableHead className="text-right">{c("man")} %</TableHead></TableRow></TableHeader>
               <TableBody>
                 {d.by_formation.map((f) => (
-                  <TableRow key={f.formation} className={f.n < 10 ? "opacity-50" : ""}>
+                  <TableRow key={f.formation}>
                     <TableCell className="font-medium">{f.formation}</TableCell>
-                    <TableCell className="num text-right">{f.n}</TableCell>
+                    <TableCell className="num text-right">{f.n}{f.n < 10 && " *"}</TableCell>
                     <TableCell className="num text-right">{n0.format(f.pct_man)}%</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            <p className="mt-4 text-sm text-muted-foreground">{t("formationNote")}</p>
           </CardContent>
         </Card>
       </div>

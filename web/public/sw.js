@@ -1,4 +1,4 @@
-const SHELL = "shell-v2";
+const SHELL = "shell-v4-coach";
 const DATA = "data-v1";
 const PRECACHE = ["/fr", "/en", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"];
 

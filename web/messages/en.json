@@ -347,6 +347,12 @@
     "target": "Target",
     "description": "Play description (original)",
     "honesty": "These are the best cases selected from the season, to illustrate the idea; they are not typical plays.",
+    "honestyAll": "Every passing play with an identified target, in tracking order. SOE is only defined against man or zone coverage.",
+    "week": "Week",
+    "game": "Game (offense / defense)",
+    "loading": "Loading replays…",
+    "loadError": "Replays could not be loaded.",
+    "noPlays": "No replay for this game.",
     "playCount": "Play {current} of {total}",
     "prev": "Previous play",
     "next": "Next play"
@@ -487,5 +493,20 @@
     "dataUnavailable": "Analysis data is unavailable. Try again after the data has been loaded.",
     "fallbackNote": "Separation analysis available",
     "closeMenu": "Close menu"
+  },
+  "Install": {
+    "title": "Install the app on your phone",
+    "body": "One tap from your home screen, full screen, and data available offline.",
+    "nativeBody": "One tap from your home screen, full screen, and data available offline.",
+    "step": "Step {n}/{total}",
+    "ios1": "Tap Safari's Share button in the bottom bar.",
+    "ios2": "Scroll down and choose “Add to Home Screen”.",
+    "ios3": "Tap “Add” at the top right. The icon appears on your home screen.",
+    "other1": "Open the browser menu (⋮) at the top right.",
+    "other2": "Choose “Install app” or “Add to Home screen”.",
+    "install": "Install",
+    "next": "Next",
+    "done": "Done",
+    "later": "Not now"
   }
 }

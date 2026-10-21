@@ -158,9 +158,9 @@ export default function Replay({ replays }: { replays: R[] }) {
           </label>
           <div className="grid grid-cols-2 gap-3 rounded-2xl sm:grid-cols-4 border border-line bg-panel p-4 text-center">
             <div><div className="num text-3xl font-extrabold">{nf.format(r.sep)}</div><div className="text-sm text-mute">{t("separation")} (yds)</div></div>
-            <div><div className="num text-3xl font-extrabold">{nf.format(r.expected_sep)}</div><div className="text-sm text-mute">{t("expected")}</div></div>
-            <div><div className="num text-3xl font-extrabold text-atk">{sg.format(r.soe)}</div><div className="text-sm text-mute">{t("soe")}</div></div>
-            <div><div className="num text-3xl font-extrabold">{sg2.format(r.epa)}</div><div className="text-sm text-mute">{t("epa")}</div></div>
+            <div><div className="num text-3xl font-extrabold">{(r.expected_sep == null ? "–" : nf.format(r.expected_sep))}</div><div className="text-sm text-mute">{t("expected")}</div></div>
+            <div><div className="num text-3xl font-extrabold text-atk">{(r.soe == null ? "–" : sg.format(r.soe))}</div><div className="text-sm text-mute">{t("soe")}</div></div>
+            <div><div className="num text-3xl font-extrabold">{(r.epa == null ? "–" : sg2.format(r.epa))}</div><div className="text-sm text-mute">{t("epa")}</div></div>
           </div>
           <div className="rounded-2xl border border-line bg-panel p-4 text-base">
             <div><span className="text-mute">{t("coverage")}:</span> <strong>{r.coverage}</strong> ({c(r.coverage_type)})</div>

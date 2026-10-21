@@ -1,4 +1,4 @@
-const SHELL = "shell-v4-coach";
+const SHELL = "shell-v5-coach";
 const DATA = "data-v1";
 const PRECACHE = ["/fr", "/en", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"];
 
@@ -29,6 +29,30 @@ self.addEventListener("fetch", (e) => {
           .then((res) => { if (res.ok) cache.put(req, res.clone()); return res; })
           .catch(() => cached);
         return cached || network;
+      })
+    );
+    return;
+  }
+
+  // Pages : reseau d'abord, copie en cache hors ligne (repli sur l'accueil de la langue)
+  if (req.mode === "navigate") {
+    e.respondWith(
+      fetch(req)
+        .then((res) => { if (res.ok) { const copy = res.clone(); caches.open(SHELL).then((c) => c.put(req, copy)); } return res; })
+        .catch(async () => (await caches.match(req)) || (await caches.match(url.pathname.startsWith("/en") ? "/en" : "/fr")) || Response.error())
+    );
+    return;
+  }
+
+  // Assets Next versionnes (hash dans le nom) : cache d'abord
+  if (url.pathname.startsWith("/_next/static/")) {
+    e.respondWith(
+      caches.open(SHELL).then(async (cache) => {
+        const hit = await cache.match(req);
+        if (hit) return hit;
+        const res = await fetch(req);
+        if (res.ok) cache.put(req, res.clone());
+        return res;
       })
     );
     return;

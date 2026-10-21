@@ -12,6 +12,7 @@ import SwRegister from "./components/SwRegister";
 import AppSidebar from "@/components/app/AppSidebar";
 import TopBar from "@/components/app/TopBar";
 import PlayerDrawer from "@/components/app/PlayerDrawer";
+import InstallWizard from "@/components/app/InstallWizard";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 
@@ -53,6 +54,7 @@ export default async function LocaleLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:p-3">{tMeta("skip")}</a>
         <NextIntlClientProvider>
           <SwRegister />
+          <InstallWizard />
           <TooltipProvider>
             <SidebarProvider style={{ "--sidebar-width": "15.5rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
               <Suspense><AppSidebar /></Suspense>

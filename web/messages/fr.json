@@ -347,6 +347,12 @@
     "target": "Cible",
     "description": "Description du jeu (originale)",
     "honesty": "Ce sont les meilleurs cas de la saison, choisis pour illustrer l'idée ; ce ne sont pas des jeux typiques.",
+    "honestyAll": "Toutes les passes dont la cible est identifiée. Le SOE n'existe que face à une couverture homme ou zone.",
+    "week": "Semaine",
+    "game": "Match (attaque / défense)",
+    "loading": "Chargement des replays…",
+    "loadError": "Impossible de charger les replays.",
+    "noPlays": "Aucun replay pour ce match.",
     "playCount": "Jeu {current} sur {total}",
     "prev": "Jeu précédent",
     "next": "Jeu suivant"
@@ -487,5 +493,20 @@
     "dataUnavailable": "Les données d’analyse ne sont pas disponibles. Réessayez après leur chargement.",
     "fallbackNote": "Analyse de séparation disponible",
     "closeMenu": "Fermer le menu"
+  },
+  "Install": {
+    "title": "Installer l'app sur votre téléphone",
+    "body": "Accès en un geste depuis l'écran d'accueil, plein écran et données disponibles hors ligne.",
+    "nativeBody": "Accès en un geste depuis l'écran d'accueil, plein écran et données disponibles hors ligne.",
+    "step": "Étape {n}/{total}",
+    "ios1": "Touchez le bouton Partager de Safari, dans la barre du bas.",
+    "ios2": "Faites défiler et choisissez « Sur l'écran d'accueil ».",
+    "ios3": "Touchez « Ajouter » en haut à droite. L'icône apparaît sur l'écran d'accueil.",
+    "other1": "Ouvrez le menu du navigateur (⋮) en haut à droite.",
+    "other2": "Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».",
+    "install": "Installer",
+    "next": "Suivant",
+    "done": "Terminé",
+    "later": "Plus tard"
   }
 }

@@ -1,8 +1,8 @@
 {
   "Meta": {
-    "title": "Who to Attack",
+    "title": "Open Man",
     "description": "NFL coach companion: find the receivers a defense cannot keep covered (Separation Over Expected).",
-    "tagline": "NFL passing-game scout",
+    "tagline": "Find the open man",
     "season": "2021 season · weeks 1–8",
     "skip": "Skip to content"
   },
@@ -95,7 +95,7 @@
   },
   "Overview": {
     "kicker": "2021 · Weeks {from}–{to}",
-    "title": "Who to attack",
+    "title": "Find the open man",
     "soeText": "Separation Over Expected is the space a receiver had from the nearest defender at the throw, compared with what is typical for that position and coverage. Use it to pick matchups.",
     "kpiPlays": "passing plays analyzed",
     "kpiRoutes": "routes measured",
@@ -452,7 +452,7 @@
     }
   },
   "Studio": {
-    "brandSub": "Passing game intelligence",
+    "brandSub": "Find the open man",
     "workspace": "Workspace",
     "dataset": "NFL Big Data Bowl",
     "methodLink": "Method & data",

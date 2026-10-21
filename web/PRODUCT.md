@@ -20,7 +20,7 @@ Next.js, React, Tailwind et next-intl. Six vues principales : accueil, plan de j
 
 ## Brand Commitments
 
-Nom existant : « Qui attaquer ». L’utilisateur demande une refonte graphique complète avec Impeccable, sans référence visuelle imposée.
+Nom : « Open Man », slogan « Find the open man ». L’utilisateur demande une refonte graphique complète avec Impeccable, sans référence visuelle imposée.
 
 ## Evidence on Hand
 

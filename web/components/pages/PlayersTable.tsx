@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { usePlayer } from "@/components/app/use-player";
+import { norm } from "@/components/app/CommandSearch";
 import Metric from "@/components/app/Metric";
 import type { PlayerProfile } from "@/lib/data";
 
@@ -33,7 +34,7 @@ export default function PlayersTable({ players }: { players: PlayerProfile[] }) 
   const data = useMemo(() => players.filter((p) =>
     (fPos === "all" || p.position === fPos) && (fTeam === "all" || p.team === fTeam) &&
     (fTier === "all" || p.tier === fTier) && p.routes >= Number(minN) &&
-    (q === "" || p.name.toLowerCase().includes(q.toLowerCase()))), [players, q, fPos, fTeam, fTier, minN]);
+    (q === "" || norm(p.name).includes(norm(q.trim())))), [players, q, fPos, fTeam, fTier, minN]);
 
   const sg = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: "always" });
   const e2 = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "always" });

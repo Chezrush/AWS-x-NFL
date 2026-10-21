@@ -18,3 +18,15 @@ web/.pnpm-store/
 # Outils locaux
 .claude-flow/
 .swarm/
+
+# Outils IA (fichiers locaux, hors dépôt)
+.claude/
+.agents/
+.mcp.json
+CLAUDE.md
+AGENTS.md
+skills-lock.json
+PRODUCT.md
+DESIGN.md
+/package.json
+/package-lock.json

@@ -1,6 +1,6 @@
 # Résumé équipe – NFL Big Data Bowl Paris (AWS x NFL)
 
-Écrit le 21/10/2026 vers 13h55. **Soumission fermée à 16h00 précises.** Ce document résume tout ce qu'il faut savoir pour rejoindre le projet. Le détail technique est dans `CLAUDE.md`.
+Écrit le 21/10/2026 vers 13h55. **Soumission fermée à 16h00 précises.** Ce document résume tout ce qu'il faut savoir pour rejoindre le projet.
 
 ## 1. L'événement et le défi
 - Epitech Kremlin-Bicêtre, challenge de 13h00 à 16h00, équipes de 1 à 3.
@@ -45,7 +45,7 @@ Pièges : terrain de 120 × 53,3 yards ; normaliser le sens de jeu avec `playDir
 ## 6. Stack (simplifiée : c'est un PoC)
 - **PWA Next.js (TypeScript) + i18n FR/EN (next-intl)** + **Docker** (`docker compose -f web/docker-compose.yml up --build`, port 3000).
 - Analyse **Python** (pandas) dans `analysis/` qui exporte des JSON dans `web/data/`, lus en statique par le front.
-- **Abandonnés** : Hono, Better Auth, SQLite, auth (inutiles pour un PoC). Les skills Better Auth importés restent dans `.claude/` sans être utilisés.
+- **Abandonnés** : Hono, Better Auth, SQLite, auth (inutiles pour un PoC).
 - Pas de démo orale : le **README.md racine (anglais, court, impactant)** et les captures dans `docs/img/` sont le livrable principal. `README.fr.md` en version française.
 
 ## 7. Axe retenu : « Qui attaquer » (décidé à 13h58)
@@ -53,14 +53,11 @@ Pièges : terrain de 120 × 53,3 yards ; normaliser le sens de jeu avec `playDir
 - Preuve : sur 6 056 passes ciblées, complétion 50 % -> 69 % -> 80 % selon le SOE (bas/moyen/haut).
 - Abandonné : le duel receveur/défenseur individuel (appariement stable sur 29 % des jeux homme seulement).
 
-## 8. Organisation du travail avec Claude Code
-- Skill `hackathon-orchestrator` (Opus) et sous-agents Sonnet (`data-explorer`, `builder`, `doc-writer`, `deployer`) dans `.claude/`. Pas de commit/push sans demande explicite.
-
-## 9. État (14h10)
+## 8. État (14h10)
 - Fait : analyse Python et 5 JSON, validation, application complète (hero, preuve, plan de match, classement, replay animé, méthode), FR/EN, Docker testé, README EN + FR, captures dans `docs/img/`.
 - Reste : relecture du README, vérif depuis un clone propre, repo public, **soumission via https://tinyurl.com/awsnfl2026**.
 
-## 10. Planning cible
+## 9. Planning cible
 | Heure | Objectif |
 |---|---|
 | 14h00 | Axe choisi, pitch en 4 phrases |

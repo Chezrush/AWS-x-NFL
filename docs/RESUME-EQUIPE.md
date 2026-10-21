@@ -42,30 +42,23 @@ Priorités du jury, par ordre : **insight football pour un pro** > technique > l
 
 Pièges : terrain de 120 × 53,3 yards ; normaliser le sens de jeu avec `playDirection` ; `playId` n'est pas unique entre matchs ; **il n'y a pas de colonne « receveur ciblé »** (à inférer, par ex. joueur le plus proche du ballon à `pass_arrived`).
 
-## 6. Stack et décisions validées
-- **PWA Next.js (TypeScript) + Hono + Better Auth.** Analyse en **Python** (pandas) hors ligne ; elle exporte des **JSON agrégés** que l'API Hono sert. L'app web ne lit jamais les CSV de tracking.
-- **SQLite** (pas de Prisma). Auth simple + **accès démo en un clic** pour le jury.
-- **Tout est dockerisé** (Dockerfile + `docker-compose.yml`), hébergé sur le VPS d'un membre de l'équipe.
-- Utilisateur cible retenu pour l'instant : **le coach** (préparation de match).
+## 6. Stack (simplifiée : c'est un PoC)
+- **PWA Next.js (TypeScript) + i18n FR/EN (next-intl)** + **Docker** (`docker compose -f web/docker-compose.yml up --build`, port 3000).
+- Analyse **Python** (pandas) dans `analysis/` qui exporte des JSON dans `web/data/`, lus en statique par le front.
+- **Abandonnés** : Hono, Better Auth, SQLite, auth (inutiles pour un PoC). Les skills Better Auth importés restent dans `.claude/` sans être utilisés.
+- Pas de démo orale : le **README.md racine (anglais, court, impactant)** et les captures dans `docs/img/` sont le livrable principal. `README.fr.md` en version française.
 
-## 7. Pistes d'outil (axe pas encore tranché)
-| | Idée | Situation |
-|---|---|---|
-| **A – Get-Open Score** | Qui se démarque le plus vite, comparé à l'attendu selon la couverture adverse | Passe, selon le type de couverture |
-| **B – Mismatch Radar** | Détecter les duels favorables (ex. RB ou TE couvert par un linebacker) en couverture « homme à homme » | Plan de match contre une défense |
-| **C – Space Score** | Espace libre autour du receveur à la réception, YAC attendu vs réel | Après la réception |
-
-Choix en attente des chiffres de l'exploration de données : **B si l'appariement receveur/défenseur est assez stable, sinon A.** Le pitch (section 4) sera rédigé une fois l'axe choisi.
+## 7. Axe retenu : « Qui attaquer » (décidé à 13h58)
+- **Pour qui** : le coordinateur offensif. **Situation** : passe contre une défense qui choisit homme/zone. **Métrique** : SOE (séparation au lancer moins l'attendu pour ce poste, alignement et type de couverture). **Résultat** : outil « plan de match » (équipe, défense, down, distance -> receveurs à viser) + classement + replay animé.
+- Preuve : sur 6 056 passes ciblées, complétion 50 % -> 69 % -> 80 % selon le SOE (bas/moyen/haut).
+- Abandonné : le duel receveur/défenseur individuel (appariement stable sur 29 % des jeux homme seulement).
 
 ## 8. Organisation du travail avec Claude Code
-- Skill `hackathon-orchestrator` (modèle Opus) : cadre et délègue. Sous-agents (modèle Sonnet) : `data-explorer`, `builder`, `doc-writer`, `deployer`. Dans `.claude/`.
-- Skills Better Auth et règle Hono importés depuis https://github.com/Valtyyy/ClaudeCode-Hono (seulement ce qui sert en 3h).
-- Pas de commit/push sans demande explicite.
+- Skill `hackathon-orchestrator` (Opus) et sous-agents Sonnet (`data-explorer`, `builder`, `doc-writer`, `deployer`) dans `.claude/`. Pas de commit/push sans demande explicite.
 
-## 9. État au moment de l'écriture
-- Fait : mémoire projet, `CLAUDE.md`, skills/agents, données dans `data/`.
-- En cours : exploration des données (faisabilité des axes) et squelette web (`web/` : Next + Hono + Better Auth + PWA + Docker).
-- À faire : choisir l'axe, calculer la métrique en Python, exporter les JSON, écran principal, README de 3 à 5 phrases, repo public, formulaire.
+## 9. État (14h10)
+- Fait : analyse Python et 5 JSON, validation, application complète (hero, preuve, plan de match, classement, replay animé, méthode), FR/EN, Docker testé, README EN + FR, captures dans `docs/img/`.
+- Reste : relecture du README, vérif depuis un clone propre, repo public, **soumission via https://tinyurl.com/awsnfl2026**.
 
 ## 10. Planning cible
 | Heure | Objectif |

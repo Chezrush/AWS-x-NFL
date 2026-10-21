@@ -1,0 +1,24 @@
+# Prod: tourne derrière le Traefik existant (traefik-traefik-1, ports 80/443).
+# Réglages propres au serveur dans deploy/.env (voir deploy/.env.example).
+services:
+  web:
+    image: ${IMAGE}
+    restart: unless-stopped
+    networks: [proxy]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: ${TRAEFIK_NETWORK:-proxy}
+      traefik.http.routers.nfl.rule: Host(`${DOMAIN:-hackaton-nfl.epitek.eu}`)
+      traefik.http.routers.nfl.entrypoints: ${TRAEFIK_ENTRYPOINT:-websecure}
+      traefik.http.routers.nfl.tls.certresolver: ${TRAEFIK_CERTRESOLVER:-le}
+      traefik.http.services.nfl.loadbalancer.server.port: "3000"
+
+networks:
+  proxy:
+    name: ${TRAEFIK_NETWORK:-proxy}
+    external: true

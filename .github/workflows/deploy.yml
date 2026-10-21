@@ -70,11 +70,12 @@ jobs:
              touch .env && sed -i '/^IMAGE=/d' .env && echo 'IMAGE=$IMAGE_REF' >> .env && \
              docker compose pull && docker compose up -d --remove-orphans && \
              docker image prune -f"
-      - name: Smoke test
+      - name: Smoke test (depuis le VPS, via Traefik, sans passer par Cloudflare)
         run: |
-          for i in $(seq 1 15); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' https://hackaton-nfl.epitek.eu/fr || true)
-            [ "$code" = "200" ] && exit 0
-            sleep 6
-          done
-          echo "Site not healthy (last code: $code)"; exit 1
+          ssh -i ~/.ssh/id_deploy -p "${{ secrets.DEPLOY_PORT || 22 }}" "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" '
+            for i in $(seq 1 20); do
+              code=$(curl -sk -o /dev/null -w "%{http_code}" --resolve hackaton-nfl.epitek.eu:443:127.0.0.1 https://hackaton-nfl.epitek.eu/fr || true)
+              [ "$code" = "200" ] && exit 0
+              sleep 6
+            done
+            echo "Site not healthy (last code: $code)"; exit 1'

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { Suspense } from "react";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -45,12 +44,13 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const tMeta = await getTranslations({ locale, namespace: "Meta" });
 
   return (
     <html data-scroll-behavior="smooth" lang={locale} className={manrope.variable} suppressHydrationWarning>
-      <head><Script id="theme-init" strategy="beforeInteractive">{themeInit}</Script></head>
+      <head><script dangerouslySetInnerHTML={{ __html: themeInit }} /></head>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:p-3">{locale === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:p-3">{tMeta("skip")}</a>
         <NextIntlClientProvider>
           <SwRegister />
           <TooltipProvider>

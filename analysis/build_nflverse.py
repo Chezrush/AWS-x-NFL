@@ -5,7 +5,8 @@ import os, urllib.request
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXT = os.path.join(ROOT, "data", "external"); OUT = os.path.join(ROOT, "analysis", "out")
+from paths import D
+EXT = os.path.join(D, "external"); OUT = os.path.join(ROOT, "analysis", "out")
 URLS = {"pbp_2021.csv.gz": "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2021.csv.gz",
         "players.csv": "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv"}
 os.makedirs(EXT, exist_ok=True); os.makedirs(OUT, exist_ok=True)

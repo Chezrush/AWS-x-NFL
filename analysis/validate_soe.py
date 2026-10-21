@@ -60,8 +60,9 @@ def main():
         "cpoe_terciles": {k: v["cpoe"] for k, v in terciles(t, "soe", True).items()},
         "by_coverage": {ty.lower(): terciles(t[t.pff_passCoverageType == ty], "soe") for ty in ("Man", "Zone")},
     }
-    path = ROOT / "web/data/validation.json"
-    path.write_text(json.dumps(out, indent=1))
+    from paths import WEB_DIRS
+    for w in WEB_DIRS:
+        (Path(w) / "validation.json").write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))
 
 

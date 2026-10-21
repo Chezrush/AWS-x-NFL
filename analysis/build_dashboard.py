@@ -3,7 +3,8 @@ import os, json, math
 import numpy as np, pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-D = os.path.join(ROOT, "data"); OUT = os.path.join(ROOT, "analysis", "out"); WEB = os.path.join(ROOT, "web", "data")
+from paths import D, WEB_DIRS
+OUT = os.path.join(ROOT, "analysis", "out"); WEB = os.path.join(ROOT, "web", "data")
 
 def clean(o):
     if isinstance(o, dict): return {k: clean(v) for k, v in o.items()}
@@ -13,8 +14,9 @@ def clean(o):
     if isinstance(o, np.bool_): return bool(o)
     return o
 def dump(name, obj):
-    p = os.path.join(WEB, name)
-    with open(p, "w", encoding="utf-8") as f: json.dump(clean(obj), f, ensure_ascii=False, separators=(",", ":"))
+    for w in WEB_DIRS:
+        p = os.path.join(w, name)
+        with open(p, "w", encoding="utf-8") as f: json.dump(clean(obj), f, ensure_ascii=False, separators=(",", ":"))
     print(name, os.path.getsize(p) // 1024, "KB")
 def rnd(x, n=2): return None if x is None or pd.isna(x) else round(float(x), n)
 

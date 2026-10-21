@@ -1,0 +1,159 @@
+{
+ "n_targeted_routes": 6270,
+ "completion_overall": 0.651,
+ "soe_terciles": {
+  "low": {
+   "n": 2090,
+   "completion": 0.486,
+   "mean": -1.47
+  },
+  "mid": {
+   "n": 2090,
+   "completion": 0.673,
+   "mean": 0.5
+  },
+  "high": {
+   "n": 2090,
+   "completion": 0.794,
+   "mean": 3.7
+  }
+ },
+ "sep_terciles": {
+  "low": {
+   "n": 2090,
+   "completion": 0.448,
+   "mean": 1.49
+  },
+  "mid": {
+   "n": 2090,
+   "completion": 0.704,
+   "mean": 3.54
+  },
+  "high": {
+   "n": 2090,
+   "completion": 0.8,
+   "mean": 7.7
+  }
+ },
+ "epa_terciles": {
+  "low": {
+   "n": 2090,
+   "completion": 0.486,
+   "mean": -1.47,
+   "epa": -0.004,
+   "success": 0.401,
+   "cpoe": -11.2
+  },
+  "mid": {
+   "n": 2090,
+   "completion": 0.673,
+   "mean": 0.5,
+   "epa": 0.333,
+   "success": 0.563,
+   "cpoe": 3.14
+  },
+  "high": {
+   "n": 2090,
+   "completion": 0.794,
+   "mean": 3.7,
+   "epa": 0.334,
+   "success": 0.593,
+   "cpoe": 8.84
+  }
+ },
+ "epa_by_coverage": {
+  "man": {
+   "low": {
+    "n": 620,
+    "completion": 0.365,
+    "mean": -0.75,
+    "epa": -0.134,
+    "success": 0.327,
+    "cpoe": -18.76
+   },
+   "mid": {
+    "n": 620,
+    "completion": 0.576,
+    "mean": 0.35,
+    "epa": 0.384,
+    "success": 0.51,
+    "cpoe": -1.36
+   },
+   "high": {
+    "n": 620,
+    "completion": 0.755,
+    "mean": 3.05,
+    "epa": 0.533,
+    "success": 0.608,
+    "cpoe": 7.79
+   }
+  },
+  "zone": {
+   "low": {
+    "n": 1470,
+    "completion": 0.525,
+    "mean": -1.77,
+    "epa": 0.044,
+    "success": 0.424,
+    "cpoe": -8.74
+   },
+   "mid": {
+    "n": 1470,
+    "completion": 0.73,
+    "mean": 0.58,
+    "epa": 0.302,
+    "success": 0.596,
+    "cpoe": 5.91
+   },
+   "high": {
+    "n": 1470,
+    "completion": 0.806,
+    "mean": 3.96,
+    "epa": 0.267,
+    "success": 0.584,
+    "cpoe": 9.12
+   }
+  }
+ },
+ "cpoe_terciles": {
+  "low": -11.2,
+  "mid": 3.14,
+  "high": 8.84
+ },
+ "by_coverage": {
+  "man": {
+   "low": {
+    "n": 620,
+    "completion": 0.365,
+    "mean": -0.75
+   },
+   "mid": {
+    "n": 620,
+    "completion": 0.576,
+    "mean": 0.35
+   },
+   "high": {
+    "n": 620,
+    "completion": 0.755,
+    "mean": 3.05
+   }
+  },
+  "zone": {
+   "low": {
+    "n": 1470,
+    "completion": 0.525,
+    "mean": -1.77
+   },
+   "mid": {
+    "n": 1470,
+    "completion": 0.73,
+    "mean": 0.58
+   },
+   "high": {
+    "n": 1470,
+    "completion": 0.806,
+    "mean": 3.96
+   }
+  }
+ }
+}

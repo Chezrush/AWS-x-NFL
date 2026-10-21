@@ -3,14 +3,16 @@ import os, json
 import numpy as np, pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-D = os.path.join(ROOT, "data"); OUT = os.path.join(ROOT, "analysis", "out")
+from paths import D, WEB_DIRS
+OUT = os.path.join(ROOT, "analysis", "out")
 WEB = os.path.join(ROOT, "web", "data"); os.makedirs(WEB, exist_ok=True)
 K, MINN = 20, 30
 
 def dump(name, obj):
-    p = os.path.join(WEB, name)
-    with open(p, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
+    for w in WEB_DIRS:
+        p = os.path.join(w, name)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
     print(name, os.path.getsize(p) // 1024, "KB")
 
 r = pd.read_csv(os.path.join(OUT, "routes.csv"))

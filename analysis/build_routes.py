@@ -4,7 +4,7 @@ import numpy as np, pandas as pd
 from multiprocessing import Pool
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-D = os.path.join(ROOT, "data")
+from paths import D
 OUT = os.path.join(ROOT, "analysis", "out")
 os.makedirs(OUT, exist_ok=True)
 
